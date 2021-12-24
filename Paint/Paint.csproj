@@ -7,6 +7,32 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\circle.png" />
+    <None Remove="Images\copy.png" />
+    <None Remove="Images\cut.png" />
+    <None Remove="Images\ellipse.png" />
+    <None Remove="Images\line.png" />
+    <None Remove="Images\paste.png" />
+    <None Remove="Images\rectangle.png" />
+    <None Remove="Images\selection.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Fluent.Ribbon" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\circle.png" />
+    <Resource Include="Images\copy.png" />
+    <Resource Include="Images\cut.png" />
+    <Resource Include="Images\ellipse.png" />
+    <Resource Include="Images\line.png" />
+    <Resource Include="Images\paste.png" />
+    <Resource Include="Images\rectangle.png" />
+    <Resource Include="Images\selection.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Contract\Contract.csproj" />
     <ProjectReference Include="..\Ellipse2D\Ellipse2D.csproj" />
     <ProjectReference Include="..\Rectangle2D\Rectangle2D.csproj" />

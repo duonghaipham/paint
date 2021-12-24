@@ -13,6 +13,7 @@ namespace Rectangle2D
         public Point2D _finish = new Point2D();
 
         public string Name => "Rectangle";
+        public string Icon => "Images/rectangle.png";
 
         public UIElement Draw()
         {

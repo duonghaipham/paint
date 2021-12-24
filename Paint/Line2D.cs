@@ -11,6 +11,7 @@ namespace Paint
         private Point2D _end = new Point2D();
 
         public string Name => "Line";
+        public string Icon => "Images/line.png";
 
         public void HandleStart(double x, double y)
         {

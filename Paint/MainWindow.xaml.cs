@@ -15,7 +15,7 @@ namespace Paint
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Fluent.RibbonWindow
     {
         public MainWindow()
         {
@@ -84,19 +84,22 @@ namespace Paint
 
         private void winMain_Loaded(object sender, RoutedEventArgs e)
         {
-            var exeFolder = AppDomain.CurrentDomain.BaseDirectory;
-            var dlls = new DirectoryInfo(exeFolder).GetFiles("*.dll");
+            string exePath = Assembly.GetExecutingAssembly().Location;
+            string folder = System.IO.Path.GetDirectoryName(exePath);
+            FileInfo[] fis = new DirectoryInfo(folder).GetFiles("*.dll");
 
-            foreach (var dll in dlls)
+            foreach (FileInfo fileInfo in fis)
             {
-                var assembly = Assembly.LoadFile(dll.FullName);
-                var types = assembly.GetTypes();
+                var domain = AppDomain.CurrentDomain;
+                Assembly assembly = Assembly.Load(AssemblyName.GetAssemblyName(fileInfo.FullName));
+
+                Type[] types = assembly.GetTypes();
 
                 foreach (var type in types)
                 {
                     if (type.IsClass)
                     {
-                        if (typeof(IShape).IsAssignableFrom(type))
+                        if (typeof(IShape).IsAssignableFrom(type) && type != typeof(Point2D))
                         {
                             var shape = Activator.CreateInstance(type) as IShape;
                             _shapePrototypes.Add(shape.Name, shape);
@@ -109,17 +112,16 @@ namespace Paint
             foreach (var item in _shapePrototypes)
             {
                 var shape = item.Value;
-                var button = new Button()
+
+                var btnShape = new Fluent.Button()
                 {
-                    Content = shape.Name,
-                    Width = 80,
-                    Height = 35,
-                    Margin = new Thickness(5, 0, 5, 0),
-                    Tag = shape.Name
+                    Tag = shape.Name,
+                    LargeIcon = shape.Icon,
+                    SizeDefinition = "Middle"
                 };
 
-                button.Click += btnShape_Click;
-                spShapes.Children.Add(button);
+                btnShape.Click += btnShape_Click;
+                gbShapes.Items.Add(btnShape);
             }
 
             _selectedShapeName = _shapePrototypes.First().Value.Name;
@@ -128,9 +130,18 @@ namespace Paint
 
         private void btnShape_Click(object sender, RoutedEventArgs e)
         {
-            _selectedShapeName = (sender as Button).Tag as string;
+            Fluent.Button btnShape = sender as Fluent.Button;
 
-            _preview = _shapePrototypes[_selectedShapeName];
+            foreach (Fluent.Button button in gbShapes.Items)
+            {
+                button.Background = Brushes.Transparent;
+            }
+
+            btnShape.Background = Brushes.LightSkyBlue;
+
+            _selectedShapeName = btnShape.Tag as string;
+
+            _preview = _shapePrototypes[_selectedShapeName].Clone();
         }
     }
 }

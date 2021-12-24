@@ -10,6 +10,7 @@ namespace Contract
         public double Y { get; set; }
 
         public string Name => "Point";
+        public string Icon => "";
 
         public void HandleStart(double x, double y)
         {

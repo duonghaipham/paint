@@ -13,6 +13,7 @@ namespace Ellipse2D
         private Point2D _finish = new Point2D();
 
         public string Name => "Ellipse";
+        public string Icon => "Images/ellipse.png";
 
         public UIElement Draw()
         {
