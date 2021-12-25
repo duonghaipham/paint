@@ -36,6 +36,18 @@
                 </Fluent:RibbonGroupBox>
                 <Fluent:RibbonGroupBox Header="Shapes" x:Name="gbShapes">
                 </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="Color 1">
+                    <Fluent:Button
+                        x:Name="btnColor1Chooser"
+                        Click="btnColor1Chooser_Click"
+                        BorderBrush="Black" />
+                </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="Color 2">
+                    <Fluent:Button
+                        x:Name="btnColor2Chooser"
+                        Click="btnColor2Chooser_Click"
+                        BorderBrush="Black" />
+                </Fluent:RibbonGroupBox>
             </Fluent:RibbonTabItem>
         </Fluent:Ribbon>
         <Grid>

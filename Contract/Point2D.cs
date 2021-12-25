@@ -8,6 +8,7 @@ namespace Contract
     {
         public double X { get; set; }
         public double Y { get; set; }
+        private SolidColorBrush _colorBrush = Brushes.Black;
 
         public string Name => "Point";
         public string Icon => "";
@@ -24,19 +25,26 @@ namespace Contract
             Y = y;
         }
 
-        public UIElement Draw()
+        public UIElement Draw(SolidColorBrush colorBrush)
         {
-            Line l = new Line()
+            _colorBrush = colorBrush;
+
+            return ReDraw();
+        }
+
+        public UIElement ReDraw()
+        {
+            Line line = new Line()
             {
                 X1 = X,
                 Y1 = Y,
                 X2 = X,
                 Y2 = Y,
                 StrokeThickness = 1,
-                Stroke = new SolidColorBrush(Colors.Red),
+                Stroke = _colorBrush,
             };
 
-            return l;
+            return line;
         }
 
         public IShape Clone()

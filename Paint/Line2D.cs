@@ -9,6 +9,7 @@ namespace Paint
     {
         private Point2D _start = new Point2D();
         private Point2D _end = new Point2D();
+        private SolidColorBrush _colorBrush = Brushes.Black;
 
         public string Name => "Line";
         public string Icon => "Images/line.png";
@@ -23,7 +24,14 @@ namespace Paint
             _end = new Point2D() { X = x, Y = y };
         }
 
-        public UIElement Draw()
+        public UIElement Draw(SolidColorBrush colorBrush)
+        {
+            _colorBrush = colorBrush;
+
+            return ReDraw();
+        }
+
+        public UIElement ReDraw()
         {
             Line line = new Line()
             {
@@ -32,7 +40,7 @@ namespace Paint
                 X2 = _end.X,
                 Y2 = _end.Y,
                 StrokeThickness = 1,
-                Stroke = new SolidColorBrush(Colors.Red),
+                Stroke = _colorBrush,
             };
 
             return line;

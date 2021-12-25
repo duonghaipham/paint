@@ -17,6 +17,9 @@ namespace Paint
     /// </summary>
     public partial class MainWindow : Fluent.RibbonWindow
     {
+        private SolidColorBrush _color1 = Brushes.Black;
+        private SolidColorBrush _color2 = Brushes.White;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -50,12 +53,12 @@ namespace Paint
                 // Vẽ lại các hình trước đó
                 foreach (var shape in _shapes)
                 {
-                    UIElement element = shape.Draw();
+                    UIElement element = shape.ReDraw();
                     canvas.Children.Add(element);
                 }
 
                 // Vẽ hình preview đè lên
-                canvas.Children.Add(_preview.Draw());
+                canvas.Children.Add(_preview.Draw(_color1));
             }
         }
 
@@ -77,7 +80,7 @@ namespace Paint
             // Ve lai tat ca cac hinh
             foreach (var shape in _shapes)
             {
-                var element = shape.Draw();
+                var element = shape.ReDraw();
                 canvas.Children.Add(element);
             }
         }
@@ -126,6 +129,9 @@ namespace Paint
 
             _selectedShapeName = _shapePrototypes.First().Value.Name;
             _preview = _shapePrototypes[_selectedShapeName].Clone();
+
+            btnColor1Chooser.Background = _color1;
+            btnColor2Chooser.Background = _color2;
         }
 
         private void btnShape_Click(object sender, RoutedEventArgs e)
@@ -142,6 +148,28 @@ namespace Paint
             _selectedShapeName = btnShape.Tag as string;
 
             _preview = _shapePrototypes[_selectedShapeName].Clone();
+        }
+
+        private void btnColor1Chooser_Click(object sender, RoutedEventArgs e)
+        {
+            var colorDialog = new System.Windows.Forms.ColorDialog();
+
+            if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                _color1 = new SolidColorBrush(Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B));
+                btnColor1Chooser.Background = _color1;
+            }
+        }
+
+        private void btnColor2Chooser_Click(object sender, RoutedEventArgs e)
+        {
+            var colorDialog = new System.Windows.Forms.ColorDialog();
+
+            if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                _color2 = new SolidColorBrush(Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B));
+                btnColor2Chooser.Background = _color2;
+            }
         }
     }
 }
