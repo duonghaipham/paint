@@ -10,6 +10,7 @@ namespace Paint
         private Point2D _start = new Point2D();
         private Point2D _end = new Point2D();
         private SolidColorBrush _colorBrush = Brushes.Black;
+        private double _strokeThickness = 1;
 
         public string Name => "Line";
         public string Icon => "Images/line.png";
@@ -24,9 +25,10 @@ namespace Paint
             _end = new Point2D() { X = x, Y = y };
         }
 
-        public UIElement Draw(SolidColorBrush colorBrush)
+        public UIElement Draw(SolidColorBrush colorBrush, double strokeThickness)
         {
             _colorBrush = colorBrush;
+            _strokeThickness = strokeThickness;
 
             return ReDraw();
         }
@@ -39,7 +41,7 @@ namespace Paint
                 Y1 = _start.Y,
                 X2 = _end.X,
                 Y2 = _end.Y,
-                StrokeThickness = 1,
+                StrokeThickness = _strokeThickness,
                 Stroke = _colorBrush,
             };
 

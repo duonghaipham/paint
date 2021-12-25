@@ -11,15 +11,17 @@ namespace Ellipse2D
     {
         private Point2D _start = new Point2D();
         private Point2D _finish = new Point2D();
-        private SolidColorBrush _colorBrush;
+        private SolidColorBrush _colorBrush = Brushes.Black;
+        private double _strokeThickness = 1;
 
         public string Name => "Ellipse";
         public string Icon => "Images/ellipse.png";
         
 
-        public UIElement Draw(SolidColorBrush colorBrush)
+        public UIElement Draw(SolidColorBrush colorBrush, double strokeThickness)
         {
             _colorBrush = colorBrush;
+            _strokeThickness = strokeThickness;
 
             return ReDraw();
         }
@@ -31,7 +33,7 @@ namespace Ellipse2D
                 Width = Math.Abs(_start.X - _finish.X),
                 Height = Math.Abs(_start.Y - _finish.Y),
                 Stroke = _colorBrush,
-                StrokeThickness = 1
+                StrokeThickness = _strokeThickness
             };
 
             Canvas.SetLeft(ellipse, Math.Min(_start.X, _finish.X));

@@ -19,6 +19,7 @@ namespace Paint
     {
         private SolidColorBrush _color1 = Brushes.Black;
         private SolidColorBrush _color2 = Brushes.White;
+        private double _strokeThickness = 1;
 
         public MainWindow()
         {
@@ -58,7 +59,7 @@ namespace Paint
                 }
 
                 // Vẽ hình preview đè lên
-                canvas.Children.Add(_preview.Draw(_color1));
+                canvas.Children.Add(_preview.Draw(_color1, _strokeThickness));
             }
         }
 
@@ -170,6 +171,11 @@ namespace Paint
                 _color2 = new SolidColorBrush(Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B));
                 btnColor2Chooser.Background = _color2;
             }
+        }
+
+        private void sldThick_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            _strokeThickness = (sender as Slider).Value;
         }
     }
 }

@@ -12,13 +12,15 @@ namespace Rectangle2D
         private Point2D _start = new Point2D();
         private Point2D _finish = new Point2D();
         private SolidColorBrush _colorBrush = Brushes.Black;
+        private double _strokeThickness = 1;
 
         public string Name => "Rectangle";
         public string Icon => "Images/rectangle.png";
 
-        public UIElement Draw(SolidColorBrush colorBrush)
+        public UIElement Draw(SolidColorBrush colorBrush, double strokeThickness)
         {
             _colorBrush = colorBrush;
+            _strokeThickness = strokeThickness;
 
             return ReDraw();
         }
@@ -30,7 +32,7 @@ namespace Rectangle2D
                 Width = Math.Abs(_start.X - _finish.X),
                 Height = Math.Abs(_start.Y - _finish.Y),
                 Stroke = _colorBrush,
-                StrokeThickness = 1
+                StrokeThickness = _strokeThickness
             };
 
             Canvas.SetLeft(rectangle, Math.Min(_start.X, _finish.X));

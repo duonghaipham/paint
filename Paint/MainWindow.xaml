@@ -48,6 +48,15 @@
                         Click="btnColor2Chooser_Click"
                         BorderBrush="Black" />
                 </Fluent:RibbonGroupBox>
+                <Fluent:RibbonGroupBox Header="Stroke">
+                    <Slider
+                        ValueChanged="sldThick_ValueChanged"
+                        Minimum="0"
+                        Maximum="10" 
+                        Width="50"
+                        IsSnapToTickEnabled="True"
+                        TickPlacement="TopLeft" />
+                </Fluent:RibbonGroupBox>
             </Fluent:RibbonTabItem>
         </Fluent:Ribbon>
         <Grid>

@@ -9,6 +9,7 @@ namespace Contract
         public double X { get; set; }
         public double Y { get; set; }
         private SolidColorBrush _colorBrush = Brushes.Black;
+        private double _strokeThickness = 1;
 
         public string Name => "Point";
         public string Icon => "";
@@ -25,9 +26,10 @@ namespace Contract
             Y = y;
         }
 
-        public UIElement Draw(SolidColorBrush colorBrush)
+        public UIElement Draw(SolidColorBrush colorBrush, double strokeThickness)
         {
             _colorBrush = colorBrush;
+            _strokeThickness = strokeThickness;
 
             return ReDraw();
         }
@@ -40,7 +42,7 @@ namespace Contract
                 Y1 = Y,
                 X2 = X,
                 Y2 = Y,
-                StrokeThickness = 1,
+                StrokeThickness = _strokeThickness,
                 Stroke = _colorBrush,
             };
 
