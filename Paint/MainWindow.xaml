@@ -9,6 +9,8 @@
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     mc:Ignorable="d"
     Title="Paint" Height="450" Width="800"
+    WindowState="Maximized"
+    WindowStyle="None"
     Loaded="winMain_Loaded">
     <DockPanel>
         <Fluent:Ribbon DockPanel.Dock="Top">
@@ -18,6 +20,13 @@
                 </Fluent:Backstage>
             </Fluent:Ribbon.Menu>
             <Fluent:RibbonTabItem Header="Home">
+                <Fluent:RibbonGroupBox Header="File">
+                    <Fluent:Button Header="Save" Click="btnSave_Clicked" >
+                        <Fluent:Button.LargeIcon>
+                            <Image Source="Images/save.png" />
+                        </Fluent:Button.LargeIcon>
+                    </Fluent:Button>
+                </Fluent:RibbonGroupBox>
                 <Fluent:RibbonGroupBox Header="Clipboard">
                     <Fluent:SplitButton Header="Paste">
                         <Fluent:SplitButton.LargeIcon>

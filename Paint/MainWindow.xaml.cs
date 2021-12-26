@@ -9,6 +9,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Linq;
+using System.Windows.Media.Imaging;
+using Microsoft.Win32;
 
 namespace Paint
 {
@@ -216,6 +218,30 @@ namespace Paint
         private void iudDashSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             _dashSize = (sender as Xceed.Wpf.Toolkit.IntegerUpDown).Value.GetValueOrDefault();
+        }
+
+        private void btnSave_Clicked(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "PNG (*.png)|*.png";
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                Rect rect = new Rect(canvas.RenderSize);
+                RenderTargetBitmap renderTargetBitmap = 
+                    new RenderTargetBitmap((int)rect.Right, (int)rect.Bottom, 96d, 96d, PixelFormats.Default);
+                renderTargetBitmap.Render(canvas);
+
+                BitmapEncoder pngEncoder = new PngBitmapEncoder();
+                pngEncoder.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
+
+                MemoryStream memoryStream = new MemoryStream();
+
+                pngEncoder.Save(memoryStream);
+                memoryStream.Close();
+
+                File.WriteAllBytes(saveFileDialog.FileName, memoryStream.ToArray());
+            }
         }
     }
 }
