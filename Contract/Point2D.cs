@@ -10,6 +10,7 @@ namespace Contract
         public double Y { get; set; }
         private SolidColorBrush _colorBrush = Brushes.Black;
         private double _strokeThickness = 1;
+        private PenLineCap _strokeDashCap = PenLineCap.Flat;
 
         public string Name => "Point";
         public string Icon => "";
@@ -26,10 +27,17 @@ namespace Contract
             Y = y;
         }
 
-        public UIElement Draw(SolidColorBrush colorBrush, double strokeThickness)
+        public UIElement Draw(
+            SolidColorBrush colorBrush,
+            double strokeThickness,
+            PenLineCap strokeDashCap,
+            int gapSize,
+            int dashSize
+        )
         {
             _colorBrush = colorBrush;
             _strokeThickness = strokeThickness;
+            _strokeDashCap = strokeDashCap;
 
             return ReDraw();
         }

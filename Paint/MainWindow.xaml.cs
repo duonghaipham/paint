@@ -20,6 +20,9 @@ namespace Paint
         private SolidColorBrush _color1 = Brushes.Black;
         private SolidColorBrush _color2 = Brushes.White;
         private double _strokeThickness = 1;
+        private PenLineCap _strokeDashCap = PenLineCap.Flat;
+        public int _gapSize = 0;
+        public int _dashSize = 1;
 
         public MainWindow()
         {
@@ -59,7 +62,7 @@ namespace Paint
                 }
 
                 // Vẽ hình preview đè lên
-                canvas.Children.Add(_preview.Draw(_color1, _strokeThickness));
+                canvas.Children.Add(_preview.Draw(_color1, _strokeThickness, _strokeDashCap, _gapSize, _dashSize));
             }
         }
 
@@ -133,6 +136,8 @@ namespace Paint
 
             btnColor1Chooser.Background = _color1;
             btnColor2Chooser.Background = _color2;
+
+            DataContext = this;
         }
 
         private void btnShape_Click(object sender, RoutedEventArgs e)
@@ -176,6 +181,41 @@ namespace Paint
         private void sldThick_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             _strokeThickness = (sender as Slider).Value;
+        }
+
+        private void btnDashNone_Checked(object sender, RoutedEventArgs e)
+        {
+            _strokeDashCap = PenLineCap.Flat;
+        }
+
+        private void btnDashFlat_Checked(object sender, RoutedEventArgs e)
+        {
+            _strokeDashCap = PenLineCap.Flat;
+        }
+
+        private void btnDashSquare_Checked(object sender, RoutedEventArgs e)
+        {
+            _strokeDashCap = PenLineCap.Square;
+        }
+
+        private void btnDashTriangle_Checked(object sender, RoutedEventArgs e)
+        {
+            _strokeDashCap = PenLineCap.Triangle;
+        }
+
+        private void btnDashRound_Checked(object sender, RoutedEventArgs e)
+        {
+            _strokeDashCap = PenLineCap.Round;
+        }
+
+        private void iudGapSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            _gapSize = (sender as Xceed.Wpf.Toolkit.IntegerUpDown).Value.GetValueOrDefault();
+        }
+
+        private void iudDashSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            _dashSize = (sender as Xceed.Wpf.Toolkit.IntegerUpDown).Value.GetValueOrDefault();
         }
     }
 }

@@ -11,6 +11,9 @@ namespace Paint
         private Point2D _end = new Point2D();
         private SolidColorBrush _colorBrush = Brushes.Black;
         private double _strokeThickness = 1;
+        private PenLineCap _strokeDashCap = PenLineCap.Flat;
+        private int _gapSize = 0;
+        private int _dashSize = 0;
 
         public string Name => "Line";
         public string Icon => "Images/line.png";
@@ -25,10 +28,19 @@ namespace Paint
             _end = new Point2D() { X = x, Y = y };
         }
 
-        public UIElement Draw(SolidColorBrush colorBrush, double strokeThickness)
+        public UIElement Draw(
+            SolidColorBrush colorBrush,
+            double strokeThickness,
+            PenLineCap strokeDashCap,
+            int gapSize,
+            int dashSize
+        )
         {
             _colorBrush = colorBrush;
             _strokeThickness = strokeThickness;
+            _strokeDashCap = strokeDashCap;
+            _gapSize = gapSize;
+            _dashSize = dashSize;
 
             return ReDraw();
         }
@@ -41,8 +53,10 @@ namespace Paint
                 Y1 = _start.Y,
                 X2 = _end.X,
                 Y2 = _end.Y,
-                StrokeThickness = _strokeThickness,
                 Stroke = _colorBrush,
+                StrokeThickness = _strokeThickness,
+                StrokeDashCap = _strokeDashCap,
+                StrokeDashArray = new DoubleCollection() { _dashSize, _gapSize }
             };
 
             return line;

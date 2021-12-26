@@ -12,7 +12,13 @@ namespace Contract
         void HandleStart(double x, double y);
         void HandleFinish(double x, double y);
 
-        UIElement Draw(SolidColorBrush colorBrush, double strokeThickness);
+        UIElement Draw(
+            SolidColorBrush colorBrush,
+            double strokeThickness,
+            PenLineCap strokeDashCap,
+            int gapSize,
+            int dashSize
+        );
         UIElement ReDraw();
         IShape Clone();
     }

@@ -13,15 +13,26 @@ namespace Ellipse2D
         private Point2D _finish = new Point2D();
         private SolidColorBrush _colorBrush = Brushes.Black;
         private double _strokeThickness = 1;
+        private PenLineCap _strokeDashCap = PenLineCap.Flat;
+        private int _gapSize = 0;
+        private int _dashSize = 0;
 
         public string Name => "Ellipse";
         public string Icon => "Images/ellipse.png";
         
-
-        public UIElement Draw(SolidColorBrush colorBrush, double strokeThickness)
+        public UIElement Draw(
+            SolidColorBrush colorBrush,
+            double strokeThickness,
+            PenLineCap strokeDashCap,
+            int gapSize,
+            int dashSize
+        )
         {
             _colorBrush = colorBrush;
             _strokeThickness = strokeThickness;
+            _strokeDashCap = strokeDashCap;
+            _gapSize = gapSize;
+            _dashSize = dashSize;
 
             return ReDraw();
         }
@@ -33,7 +44,9 @@ namespace Ellipse2D
                 Width = Math.Abs(_start.X - _finish.X),
                 Height = Math.Abs(_start.Y - _finish.Y),
                 Stroke = _colorBrush,
-                StrokeThickness = _strokeThickness
+                StrokeThickness = _strokeThickness,
+                StrokeDashCap = _strokeDashCap,
+                StrokeDashArray = new DoubleCollection() { _dashSize, _gapSize }
             };
 
             Canvas.SetLeft(ellipse, Math.Min(_start.X, _finish.X));
