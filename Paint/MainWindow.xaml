@@ -26,6 +26,8 @@
                             <Image Source="Images/save.png" />
                         </Fluent:Button.LargeIcon>
                     </Fluent:Button>
+                    <Fluent:Button Header="Save Canvas" Click="btnSaveCanvas_Clicked" LargeIcon="Images/saveCanvas.png"/>
+                    <Fluent:Button Header="Open Canvas" Click="btnOpenCanvas_Clicked" LargeIcon="Images/openCanvas.png"/>
                 </Fluent:RibbonGroupBox>
                 <Fluent:RibbonGroupBox Header="Clipboard">
                     <Fluent:SplitButton Header="Paste">

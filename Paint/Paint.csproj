@@ -16,6 +16,7 @@
     <None Remove="Images\paste.png" />
     <None Remove="Images\rectangle.png" />
     <None Remove="Images\save.png" />
+    <None Remove="Images\saveCanvas.png" />
     <None Remove="Images\selection.png" />
   </ItemGroup>
 
@@ -33,6 +34,7 @@
     <Resource Include="Images\paste.png" />
     <Resource Include="Images\rectangle.png" />
     <Resource Include="Images\save.png" />
+    <Resource Include="Images\saveCanvas.png" />
     <Resource Include="Images\selection.png" />
   </ItemGroup>
 

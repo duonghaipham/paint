@@ -14,9 +14,6 @@ using Microsoft.Win32;
 
 namespace Paint
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Fluent.RibbonWindow
     {
         private SolidColorBrush _color1 = Brushes.Black;
@@ -241,6 +238,46 @@ namespace Paint
                 memoryStream.Close();
 
                 File.WriteAllBytes(saveFileDialog.FileName, memoryStream.ToArray());
+            }
+        }
+
+        private void btnSaveCanvas_Clicked(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "PPF (*.ppf)|*.ppf";
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                //mở file .ppf đã lưu để ghi
+                string fileName = saveFileDialog.FileName;
+                using (BinaryWriter binaryWriter = new BinaryWriter(File.Open(fileName, FileMode.Create)))
+                {
+                    //Lặp qua từng shape trong list _shapes và ghi vào file
+                }
+            }
+        }
+
+        private void btnOpenCanvas_Clicked(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFile = new OpenFileDialog();
+            openFile.Filter = "PPF (*.ppf)|*.ppf";
+
+            //TODO: Hỏi người dùng có muốn lưu hình vẽ hiện tại trước khi chọn mở file.
+
+            if (openFile.ShowDialog() == true)
+            {
+                //Clear danh sách shapes hiện tại
+                _shapes.Clear();
+
+                FileStream file = File.Open(openFile.FileName, FileMode.Open);
+                using (BinaryReader binaryReader = new BinaryReader(file))
+                {
+                    //Đọc đến khi hết file. Mỗi lần đọc thì parse ra shape và thêm vào list _shapes
+                    while (binaryReader.BaseStream.Position != binaryReader.BaseStream.Length)
+                    {
+
+                    }
+                }
             }
         }
     }

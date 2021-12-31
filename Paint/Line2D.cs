@@ -1,4 +1,5 @@
-﻿using Contract;
+﻿using System.IO;
+using Contract;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -65,6 +66,24 @@ namespace Paint
         public IShape Clone()
         {
             return new Line2D();
+        }
+
+        public byte[] Serialize()
+        {
+            using (MemoryStream m = new MemoryStream())
+            {
+                using (BinaryWriter writer = new BinaryWriter(m))
+                {
+                    writer.Write(Name);
+                    writer.Write(_start);
+                }
+                return m.ToArray();
+            }
+        }
+
+        public IShape Deserialize(byte[] data)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
