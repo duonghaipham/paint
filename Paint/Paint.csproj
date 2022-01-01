@@ -13,6 +13,7 @@
     <None Remove="Images\cut.png" />
     <None Remove="Images\ellipse.png" />
     <None Remove="Images\line.png" />
+    <None Remove="Images\openCanvas.png" />
     <None Remove="Images\paste.png" />
     <None Remove="Images\rectangle.png" />
     <None Remove="Images\save.png" />
@@ -31,6 +32,7 @@
     <Resource Include="Images\cut.png" />
     <Resource Include="Images\ellipse.png" />
     <Resource Include="Images\line.png" />
+    <Resource Include="Images\openCanvas.png" />
     <Resource Include="Images\paste.png" />
     <Resource Include="Images\rectangle.png" />
     <Resource Include="Images\save.png" />

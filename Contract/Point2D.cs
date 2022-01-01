@@ -45,7 +45,7 @@ namespace Contract
 
         public UIElement ReDraw()
         {
-            Line line = new Line()
+            Line line = new Line
             {
                 X1 = X,
                 Y1 = Y,
@@ -63,26 +63,70 @@ namespace Contract
             return new Point2D();
         }
 
+        //Dãy byte[] được trả về có nội dung:
+        //Chiều dài nội dung - Name - X - Y - colorBrush - strokeThickness - strokeDashCap
         public byte[] Serialize()
         {
             using (MemoryStream m = new MemoryStream())
             {
                 using (BinaryWriter writer = new BinaryWriter(m))
                 {
-                    writer.Write(Name);
                     writer.Write(X);
                     writer.Write(Y);
-                    writer.Write(_colorBrush);
+                    writer.Write(_colorBrush.ToString());
                     writer.Write(_strokeThickness);
-                    writer.Write(_strokeDashCap);
+                    writer.Write(_strokeDashCap.ToString());
+
+                    //Thêm chiều dài nội dung đã ghi & Name vào đầu memory stream
+                    using (MemoryStream m1 = new MemoryStream())
+                    {
+                        using (BinaryWriter writer1 = new BinaryWriter(m1))
+                        {
+                            writer1.Write(m.Length);
+                            writer1.Write(Name);
+                            writer1.Write(m.ToArray());
+                            return m1.ToArray();
+                        }
+                    }
                 }
-                return m.ToArray();
             }
         }
 
+        //Dãy byte[] nhận vào cần có nội dung:
+        //X - Y - colorBrush - strokeThickness - strokeDashCap
         public IShape Deserialize(byte[] data)
         {
-            throw new System.NotImplementedException();
+            Point2D result = new Point2D();
+            using (MemoryStream m = new MemoryStream(data))
+            {
+                using (BinaryReader reader = new BinaryReader(m))
+                {
+                    double x = reader.ReadDouble();
+                    double y = reader.ReadDouble();
+                    result.HandleStart(x, y);
+                    BrushConverter brushConverter = new BrushConverter();
+                    result._colorBrush = brushConverter.ConvertFromString(reader.ReadString()) as SolidColorBrush;
+                    result._strokeThickness = reader.ReadDouble();
+                    result._strokeDashCap = parsePenLineCap(reader.ReadString());
+                }
+
+                return result;
+            }
+        }
+
+        private PenLineCap parsePenLineCap(string choice)
+        {
+            switch (choice)
+            {
+                case "Round":
+                    return PenLineCap.Round;
+                case "Square":
+                    return PenLineCap.Square;
+                case "Triangle":
+                    return PenLineCap.Triangle;
+                default:
+                    return PenLineCap.Flat;
+            }
         }
     }
 }

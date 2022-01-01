@@ -26,6 +26,9 @@ namespace Paint
         public MainWindow()
         {
             InitializeComponent();
+            Line2D line2D = new Line2D();
+            byte[] bytes = line2D.Serialize();
+            IShape newPoint2D = line2D.Deserialize(bytes);
         }
 
         bool _isDrawing = false;

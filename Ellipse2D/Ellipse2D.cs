@@ -71,5 +71,15 @@ namespace Ellipse2D
         {
             return new Ellipse2D();
         }
+
+        public byte[] Serialize()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IShape Deserialize(byte[] data)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -69,5 +69,15 @@ namespace Rectangle2D
         {
             return new Rectangle2D();
         }
+
+        public byte[] Serialize()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IShape Deserialize(byte[] data)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
