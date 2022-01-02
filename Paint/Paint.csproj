@@ -4,18 +4,22 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
-    <UseWindowsForms>true</UseWindowsForms> 
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>Images\appIcon.ico</ApplicationIcon> 
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\appIcon.ico" />
     <None Remove="Images\circle.png" />
     <None Remove="Images\copy.png" />
     <None Remove="Images\cut.png" />
     <None Remove="Images\ellipse.png" />
     <None Remove="Images\line.png" />
+    <None Remove="Images\openCanvas.png" />
     <None Remove="Images\paste.png" />
     <None Remove="Images\rectangle.png" />
     <None Remove="Images\save.png" />
+    <None Remove="Images\saveCanvas.png" />
     <None Remove="Images\selection.png" />
   </ItemGroup>
 
@@ -25,14 +29,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Images\appIcon.ico" />
     <Resource Include="Images\circle.png" />
     <Resource Include="Images\copy.png" />
     <Resource Include="Images\cut.png" />
     <Resource Include="Images\ellipse.png" />
     <Resource Include="Images\line.png" />
+    <Resource Include="Images\openCanvas.png" />
     <Resource Include="Images\paste.png" />
     <Resource Include="Images\rectangle.png" />
     <Resource Include="Images\save.png" />
+    <Resource Include="Images\saveCanvas.png" />
     <Resource Include="Images\selection.png" />
   </ItemGroup>
 

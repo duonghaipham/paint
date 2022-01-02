@@ -21,5 +21,7 @@ namespace Contract
         );
         UIElement ReDraw();
         IShape Clone();
+        byte[] Serialize();
+        IShape Deserialize(byte[] data);
     }
 }

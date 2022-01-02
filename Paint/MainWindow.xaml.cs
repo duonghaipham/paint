@@ -9,14 +9,16 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Linq;
+using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Media.Imaging;
-using Microsoft.Win32;
+using MessageBox = System.Windows.MessageBox;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
+using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace Paint
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Fluent.RibbonWindow
     {
         private SolidColorBrush _color1 = Brushes.Black;
@@ -93,29 +95,8 @@ namespace Paint
 
         private void winMain_Loaded(object sender, RoutedEventArgs e)
         {
-            string exePath = Assembly.GetExecutingAssembly().Location;
-            string folder = System.IO.Path.GetDirectoryName(exePath);
-            FileInfo[] fis = new DirectoryInfo(folder).GetFiles("*.dll");
-
-            foreach (FileInfo fileInfo in fis)
-            {
-                var domain = AppDomain.CurrentDomain;
-                Assembly assembly = Assembly.Load(AssemblyName.GetAssemblyName(fileInfo.FullName));
-
-                Type[] types = assembly.GetTypes();
-
-                foreach (var type in types)
-                {
-                    if (type.IsClass)
-                    {
-                        if (typeof(IShape).IsAssignableFrom(type) && type != typeof(Point2D))
-                        {
-                            var shape = Activator.CreateInstance(type) as IShape;
-                            _shapePrototypes.Add(shape.Name, shape);
-                        }
-                    }
-                }
-            }
+            //Lấy các prototypes từ factory
+            _shapePrototypes = ShapeFactory.GetInstance().GetPrototype();
 
             // Tạo ra các nút bấm hàng mẫu
             foreach (var item in _shapePrototypes)
@@ -185,11 +166,6 @@ namespace Paint
             _strokeThickness = (sender as Slider).Value;
         }
 
-        private void btnDashNone_Checked(object sender, RoutedEventArgs e)
-        {
-            _strokeDashCap = PenLineCap.Flat;
-        }
-
         private void btnDashFlat_Checked(object sender, RoutedEventArgs e)
         {
             _strokeDashCap = PenLineCap.Flat;
@@ -241,6 +217,75 @@ namespace Paint
                 memoryStream.Close();
 
                 File.WriteAllBytes(saveFileDialog.FileName, memoryStream.ToArray());
+            }
+        }
+
+        private void btnSaveCanvas_Clicked(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "PPF (*.ppf)|*.ppf";
+            saveFileDialog.FileName = "ppfCanvas";
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                //mở file .ppf đã lưu để ghi
+                string fileName = saveFileDialog.FileName;
+                using (BinaryWriter binaryWriter = new BinaryWriter(File.Open(fileName, FileMode.Create)))
+                {
+                    foreach (IShape shape in _shapes)
+                    {
+                        binaryWriter.Write(shape.Serialize());
+                    }
+                }
+            }
+        }
+
+        private void btnOpenCanvas_Clicked(object sender, RoutedEventArgs e)
+        {
+            //Hỏi người dùng có muốn lưu hình vẽ hiện tại trước khi chọn mở file.
+            if (_shapes.Count > 0)
+            {
+                MessageBoxResult result = MessageBox.Show(
+                    "This canvas is not empty.\nDo you want to save it before open new one? (Yes/No)",
+                    "Waring", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    btnSaveCanvas_Clicked(null, null);
+                    return;
+                }
+            }
+
+            OpenFileDialog openFile = new OpenFileDialog();
+            openFile.Filter = "PPF (*.ppf)|*.ppf";
+
+            if (openFile.ShowDialog() == true)
+            {
+                //Clear danh sách shapes và canvas
+                _shapes.Clear();
+                canvas.Children.Clear();
+
+                FileStream file = File.Open(openFile.FileName, FileMode.Open);
+                using (BinaryReader binaryReader = new BinaryReader(file))
+                {
+                    //Đọc đến khi hết file. Mỗi lần đọc thì parse ra shape và thêm vào list _shapes
+                    while (binaryReader.BaseStream.Position != binaryReader.BaseStream.Length)
+                    {
+                        long size = binaryReader.ReadInt64();
+                        string name = binaryReader.ReadString();
+                        byte[] data = binaryReader.ReadBytes((int)size);
+
+                        IShape shape = _shapePrototypes[name].Deserialize(data);
+                        _shapes.Add(shape);
+                    }
+                }
+            }
+
+            // Ve lai tat ca cac hinh
+            foreach (var shape in _shapes)
+            {
+                var element = shape.ReDraw();
+                canvas.Children.Add(element);
             }
         }
     }
