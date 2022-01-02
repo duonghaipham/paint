@@ -4,10 +4,12 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
-    <UseWindowsForms>true</UseWindowsForms> 
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>Images\appIcon.ico</ApplicationIcon> 
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\appIcon.ico" />
     <None Remove="Images\circle.png" />
     <None Remove="Images\copy.png" />
     <None Remove="Images\cut.png" />
@@ -27,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Images\appIcon.ico" />
     <Resource Include="Images\circle.png" />
     <Resource Include="Images\copy.png" />
     <Resource Include="Images\cut.png" />
