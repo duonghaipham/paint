@@ -9,8 +9,13 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Linq;
+using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Media.Imaging;
-using Microsoft.Win32;
+using MessageBox = System.Windows.MessageBox;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
+using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace Paint
 {
@@ -219,6 +224,7 @@ namespace Paint
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "PPF (*.ppf)|*.ppf";
+            saveFileDialog.FileName = "ppfCanvas";
 
             if (saveFileDialog.ShowDialog() == true)
             {
@@ -226,22 +232,38 @@ namespace Paint
                 string fileName = saveFileDialog.FileName;
                 using (BinaryWriter binaryWriter = new BinaryWriter(File.Open(fileName, FileMode.Create)))
                 {
-                    //Lặp qua từng shape trong list _shapes và ghi vào file
+                    foreach (IShape shape in _shapes)
+                    {
+                        binaryWriter.Write(shape.Serialize());
+                    }
                 }
             }
         }
 
         private void btnOpenCanvas_Clicked(object sender, RoutedEventArgs e)
         {
+            //Hỏi người dùng có muốn lưu hình vẽ hiện tại trước khi chọn mở file.
+            if (_shapes.Count > 0)
+            {
+                MessageBoxResult result = MessageBox.Show(
+                    "This canvas is not empty.\nDo you want to save it before open new one? (Yes/No)",
+                    "Waring", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    btnSaveCanvas_Clicked(null, null);
+                    return;
+                }
+            }
+
             OpenFileDialog openFile = new OpenFileDialog();
             openFile.Filter = "PPF (*.ppf)|*.ppf";
 
-            //TODO: Hỏi người dùng có muốn lưu hình vẽ hiện tại trước khi chọn mở file.
-
             if (openFile.ShowDialog() == true)
             {
-                //Clear danh sách shapes hiện tại
+                //Clear danh sách shapes và canvas
                 _shapes.Clear();
+                canvas.Children.Clear();
 
                 FileStream file = File.Open(openFile.FileName, FileMode.Open);
                 using (BinaryReader binaryReader = new BinaryReader(file))
@@ -249,9 +271,21 @@ namespace Paint
                     //Đọc đến khi hết file. Mỗi lần đọc thì parse ra shape và thêm vào list _shapes
                     while (binaryReader.BaseStream.Position != binaryReader.BaseStream.Length)
                     {
+                        long size = binaryReader.ReadInt64();
+                        string name = binaryReader.ReadString();
+                        byte[] data = binaryReader.ReadBytes((int)size);
 
+                        IShape shape = _shapePrototypes[name].Deserialize(data);
+                        _shapes.Add(shape);
                     }
                 }
+            }
+
+            // Ve lai tat ca cac hinh
+            foreach (var shape in _shapes)
+            {
+                var element = shape.ReDraw();
+                canvas.Children.Add(element);
             }
         }
     }
