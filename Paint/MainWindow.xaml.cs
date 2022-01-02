@@ -314,15 +314,20 @@ namespace Paint
             UpdateViewBox((e.Delta > 0) ? 10 : -10);
         }
 
+        private double minWidth = 10;
+        private double maxWidth = 400;
         private void UpdateViewBox(int newValue)
         {
             double newWidth = ZoomViewbox.Width + newValue;
             double newHeight = ZoomViewbox.Width + newValue;
 
-            if (newWidth >= 0 && newHeight >= 0)
+            if (newWidth >= minWidth && newWidth <= maxWidth)
             {
-                ZoomViewbox.Width = newWidth;
-                ZoomViewbox.Height = newHeight;
+                if (newWidth >= 0 && newHeight >= 0)
+                {
+                    ZoomViewbox.Width = newWidth;
+                    ZoomViewbox.Height = newHeight;
+                }
             }
         }
     }

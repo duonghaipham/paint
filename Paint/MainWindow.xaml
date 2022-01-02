@@ -130,8 +130,8 @@
             </Fluent:RibbonTabItem>
         </Fluent:Ribbon>
 
-        <Grid>
-            <Viewbox x:Name="ZoomViewbox" Stretch="Fill" StretchDirection="Both">
+        <Grid ClipToBounds="True">
+            <Viewbox x:Name="ZoomViewbox" Stretch="Fill">
                 <Canvas x:Name="canvas" Background="White"/>
             </Viewbox>
             <Border
