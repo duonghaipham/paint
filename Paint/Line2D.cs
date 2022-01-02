@@ -109,8 +109,8 @@ namespace Paint
                 using (BinaryReader reader = new BinaryReader(m))
                 {
                     //these 2 lines for debug purpose only. Comment them out before release
-                    long size = reader.ReadInt64();
-                    string lineName = reader.ReadString();
+                    //long size = reader.ReadInt64();
+                    //string lineName = reader.ReadString();
 
                     //deserialize Point2D start
                     long sizeOfStart = reader.ReadInt64();
@@ -121,7 +121,7 @@ namespace Paint
                     //deserialize Point2D end
                     long sizeOfEnd = reader.ReadInt64();
                     name = reader.ReadString(); //read the name "Point"
-                    result._end = result._end.Deserialize(reader.ReadBytes((int)sizeOfStart)) as Point2D;
+                    result._end = result._end.Deserialize(reader.ReadBytes((int)sizeOfEnd)) as Point2D;
 
                     //deserialize other attributes
                     BrushConverter brushConverter = new BrushConverter();

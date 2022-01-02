@@ -68,7 +68,7 @@
                             Value="1"
                             Minimum="0"
                             Maximum="15"
-                            Width="75" />
+                            Width="75"/>
                         <TextBlock 
                             Text="{Binding ElementName=sldStrokeThick, Path=Value, StringFormat={}{0:N0}}"
                             Width="15" />

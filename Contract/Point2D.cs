@@ -104,6 +104,7 @@ namespace Contract
                     double x = reader.ReadDouble();
                     double y = reader.ReadDouble();
                     result.HandleStart(x, y);
+
                     BrushConverter brushConverter = new BrushConverter();
                     result._colorBrush = brushConverter.ConvertFromString(reader.ReadString()) as SolidColorBrush;
                     result._strokeThickness = reader.ReadDouble();

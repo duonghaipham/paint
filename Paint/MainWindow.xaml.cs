@@ -26,9 +26,6 @@ namespace Paint
         public MainWindow()
         {
             InitializeComponent();
-            Line2D line2D = new Line2D();
-            byte[] bytes = line2D.Serialize();
-            IShape newPoint2D = line2D.Deserialize(bytes);
         }
 
         bool _isDrawing = false;
@@ -183,11 +180,6 @@ namespace Paint
         private void sldThick_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             _strokeThickness = (sender as Slider).Value;
-        }
-
-        private void btnDashNone_Checked(object sender, RoutedEventArgs e)
-        {
-            _strokeDashCap = PenLineCap.Flat;
         }
 
         private void btnDashFlat_Checked(object sender, RoutedEventArgs e)
