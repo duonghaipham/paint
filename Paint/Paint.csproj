@@ -18,9 +18,11 @@
     <None Remove="Images\openCanvas.png" />
     <None Remove="Images\paste.png" />
     <None Remove="Images\rectangle.png" />
+    <None Remove="Images\redo.png" />
     <None Remove="Images\save.png" />
     <None Remove="Images\saveCanvas.png" />
     <None Remove="Images\selection.png" />
+    <None Remove="Images\undo.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,9 +40,11 @@
     <Resource Include="Images\openCanvas.png" />
     <Resource Include="Images\paste.png" />
     <Resource Include="Images\rectangle.png" />
+    <Resource Include="Images\redo.png" />
     <Resource Include="Images\save.png" />
     <Resource Include="Images\saveCanvas.png" />
     <Resource Include="Images\selection.png" />
+    <Resource Include="Images\undo.png" />
   </ItemGroup>
 
   <ItemGroup>
