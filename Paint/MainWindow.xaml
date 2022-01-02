@@ -32,7 +32,7 @@
                 </Fluent:Backstage>
             </Fluent:Ribbon.Menu>
 
-            <!--Ribbon Tab items-->
+            <!--Ribbon Home Tab items-->
             <Fluent:RibbonTabItem Header="Home">
                 <Fluent:RibbonGroupBox Header="File">
                     <Fluent:Button Header="Save" Click="btnSave_Clicked" >
@@ -126,6 +126,14 @@
                             GroupName="rbDash"
                             Checked="btnDashRound_Checked" />
                     </Fluent:RibbonGroupBox>
+                </Fluent:RibbonGroupBox>
+            </Fluent:RibbonTabItem>
+            <!--Ribbon View Tab items-->
+            <Fluent:RibbonTabItem Header="View">
+                <Fluent:RibbonGroupBox Header="Zoom">
+                    <Fluent:Button Header="Zoom In" Click="ZoomInButton_Click" LargeIcon="Images/zoomin.png"/>
+                    <Fluent:Button Header="Zoom Out" Click="ZoomOutButton_Click" LargeIcon="Images/zoomout.png"/>
+                    <Fluent:Button Header="100%" Click="NormalZoomButton_Click" LargeIcon="Images/100.png"/>
                 </Fluent:RibbonGroupBox>
             </Fluent:RibbonTabItem>
         </Fluent:Ribbon>

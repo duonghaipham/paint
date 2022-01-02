@@ -28,13 +28,14 @@ namespace Paint
         public int _gapSize = 0;
         public int _dashSize = 1;
 
+        private int originalZoomViewSize = 100;
         public MainWindow()
         {
             InitializeComponent();
-            ZoomViewbox.Width = 100;
-            ZoomViewbox.Height = 100;
-            canvas.Width = ZoomViewbox.Width;
-            canvas.Height = ZoomViewbox.Height;
+            ZoomViewbox.Width = originalZoomViewSize;
+            ZoomViewbox.Height = originalZoomViewSize;
+            canvas.Width = originalZoomViewSize;
+            canvas.Height = originalZoomViewSize;
         }
 
         bool _isDrawing = false;
@@ -309,9 +310,10 @@ namespace Paint
             }
         }
 
+        private int zoomAmount = 10;
         private void MainWindow_OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            UpdateViewBox((e.Delta > 0) ? 10 : -10);
+            UpdateViewBox((e.Delta > 0) ? zoomAmount : -zoomAmount);
         }
 
         private double minWidth = 10;
@@ -329,6 +331,22 @@ namespace Paint
                     ZoomViewbox.Height = newHeight;
                 }
             }
+        }
+
+        private void ZoomInButton_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateViewBox(zoomAmount);
+        }
+
+        private void ZoomOutButton_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateViewBox(-zoomAmount);
+        }
+
+        private void NormalZoomButton_Click(object sender, RoutedEventArgs e)
+        {
+            ZoomViewbox.Width = originalZoomViewSize;
+            ZoomViewbox.Height = originalZoomViewSize;
         }
     }
 }
