@@ -90,29 +90,8 @@ namespace Paint
 
         private void winMain_Loaded(object sender, RoutedEventArgs e)
         {
-            string exePath = Assembly.GetExecutingAssembly().Location;
-            string folder = System.IO.Path.GetDirectoryName(exePath);
-            FileInfo[] fis = new DirectoryInfo(folder).GetFiles("*.dll");
-
-            foreach (FileInfo fileInfo in fis)
-            {
-                var domain = AppDomain.CurrentDomain;
-                Assembly assembly = Assembly.Load(AssemblyName.GetAssemblyName(fileInfo.FullName));
-
-                Type[] types = assembly.GetTypes();
-
-                foreach (var type in types)
-                {
-                    if (type.IsClass)
-                    {
-                        if (typeof(IShape).IsAssignableFrom(type) && type != typeof(Point2D))
-                        {
-                            var shape = Activator.CreateInstance(type) as IShape;
-                            _shapePrototypes.Add(shape.Name, shape);
-                        }
-                    }
-                }
-            }
+            //Lấy các prototypes từ factory
+            _shapePrototypes = ShapeFactory.GetInstance().GetPrototype();
 
             // Tạo ra các nút bấm hàng mẫu
             foreach (var item in _shapePrototypes)
