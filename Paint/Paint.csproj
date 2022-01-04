@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\100.png" />
     <None Remove="Images\appIcon.ico" />
     <None Remove="Images\circle.png" />
     <None Remove="Images\copy.png" />
@@ -18,9 +19,13 @@
     <None Remove="Images\openCanvas.png" />
     <None Remove="Images\paste.png" />
     <None Remove="Images\rectangle.png" />
+    <None Remove="Images\redo.png" />
     <None Remove="Images\save.png" />
     <None Remove="Images\saveCanvas.png" />
     <None Remove="Images\selection.png" />
+    <None Remove="Images\undo.png" />
+    <None Remove="Images\zoomin.png" />
+    <None Remove="Images\zoomout.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,6 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Images\100.png" />
     <Resource Include="Images\appIcon.ico" />
     <Resource Include="Images\circle.png" />
     <Resource Include="Images\copy.png" />
@@ -38,9 +44,13 @@
     <Resource Include="Images\openCanvas.png" />
     <Resource Include="Images\paste.png" />
     <Resource Include="Images\rectangle.png" />
+    <Resource Include="Images\redo.png" />
     <Resource Include="Images\save.png" />
     <Resource Include="Images\saveCanvas.png" />
     <Resource Include="Images\selection.png" />
+    <Resource Include="Images\undo.png" />
+    <Resource Include="Images\zoomin.png" />
+    <Resource Include="Images\zoomout.png" />
   </ItemGroup>
 
   <ItemGroup>

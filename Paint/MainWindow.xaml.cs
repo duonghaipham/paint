@@ -28,14 +28,20 @@ namespace Paint
         public int _gapSize = 0;
         public int _dashSize = 1;
 
+        private int originalZoomViewSize = 100;
         public MainWindow()
         {
             InitializeComponent();
+            ZoomViewbox.Width = originalZoomViewSize;
+            ZoomViewbox.Height = originalZoomViewSize;
+            canvas.Width = originalZoomViewSize;
+            canvas.Height = originalZoomViewSize;
         }
 
         bool _isDrawing = false;
         string _selectedShapeName = "";
-        List<IShape> _shapes = new List<IShape>();
+        List<IShape> _shapes = new List<IShape>();  //Danh sách các shape được vẽ trên canvas
+        List<IShape> _undidShapes = new List<IShape>(); //Danh sách các shape bị undo
         IShape _preview;
         Dictionary<string, IShape> _shapePrototypes = new Dictionary<string, IShape>();
 
@@ -55,15 +61,8 @@ namespace Paint
                 Point pos = e.GetPosition(canvas);
                 _preview.HandleFinish(pos.X, pos.Y);
 
-                // Xoá hết các hình vẽ cũ
-                canvas.Children.Clear();
-
                 // Vẽ lại các hình trước đó
-                foreach (var shape in _shapes)
-                {
-                    UIElement element = shape.ReDraw();
-                    canvas.Children.Add(element);
-                }
+                RedrawAllShapes();
 
                 // Vẽ hình preview đè lên
                 canvas.Children.Add(_preview.Draw(_color1, _strokeThickness, _strokeDashCap, _gapSize, _dashSize));
@@ -82,15 +81,8 @@ namespace Paint
             // Sinh ra đối tượng mẫu kế
             _preview = _shapePrototypes[_selectedShapeName].Clone();
 
-            // Ve lai Xoa toan bo
-            canvas.Children.Clear();
-
             // Ve lai tat ca cac hinh
-            foreach (var shape in _shapes)
-            {
-                var element = shape.ReDraw();
-                canvas.Children.Add(element);
-            }
+            RedrawAllShapes();
         }
 
         private void winMain_Loaded(object sender, RoutedEventArgs e)
@@ -281,12 +273,80 @@ namespace Paint
                 }
             }
 
+            RedrawAllShapes();
+        }
+
+        private void RedrawAllShapes()
+        {
+            canvas.Children.Clear();
+
             // Ve lai tat ca cac hinh
             foreach (var shape in _shapes)
             {
                 var element = shape.ReDraw();
                 canvas.Children.Add(element);
             }
+        }
+
+        private void UndoButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_shapes.Count > 0)
+            {
+                _undidShapes.Add(_shapes[^1]);
+                _shapes.RemoveAt(_shapes.Count - 1);
+
+                RedrawAllShapes();
+            }
+        }
+
+        private void RedoButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_undidShapes.Count > 0)
+            {
+                _shapes.Add(_undidShapes[^1]);
+                _undidShapes.RemoveAt(_undidShapes.Count - 1);
+                
+                RedrawAllShapes();
+            }
+        }
+
+        private int zoomAmount = 10;
+        private void MainWindow_OnMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            UpdateViewBox((e.Delta > 0) ? zoomAmount : -zoomAmount);
+        }
+
+        private double minWidth = 10;
+        private double maxWidth = 400;
+        private void UpdateViewBox(int newValue)
+        {
+            double newWidth = ZoomViewbox.Width + newValue;
+            double newHeight = ZoomViewbox.Width + newValue;
+
+            if (newWidth >= minWidth && newWidth <= maxWidth)
+            {
+                if (newWidth >= 0 && newHeight >= 0)
+                {
+                    ZoomViewbox.Width = newWidth;
+                    ZoomViewbox.Height = newHeight;
+                }
+            }
+        }
+
+        private void ZoomInButton_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateViewBox(zoomAmount);
+        }
+
+        private void ZoomOutButton_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateViewBox(-zoomAmount);
+        }
+
+        private void NormalZoomButton_Click(object sender, RoutedEventArgs e)
+        {
+            ZoomViewbox.Width = originalZoomViewSize;
+            ZoomViewbox.Height = originalZoomViewSize;
         }
     }
 }
