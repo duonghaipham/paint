@@ -27,15 +27,15 @@ namespace Paint
         private PenLineCap _strokeDashCap = PenLineCap.Flat;
         public int _gapSize = 0;
         public int _dashSize = 1;
+        private Matrix originalMatrix;  //matrix ban đầu của canvas, giúp phục hồi trạng thái zoom ban đầu
 
-        private int originalZoomViewSize = 100;
         public MainWindow()
         {
             InitializeComponent();
-            ZoomViewbox.Width = originalZoomViewSize;
-            ZoomViewbox.Height = originalZoomViewSize;
-            canvas.Width = originalZoomViewSize;
-            canvas.Height = originalZoomViewSize;
+
+            //Lưu matrix ban đầu của canvas
+            var matrixTransform = canvas.RenderTransform as MatrixTransform;
+            if (matrixTransform != null) originalMatrix = matrixTransform.Matrix;
         }
 
         bool _isDrawing = false;
@@ -276,6 +276,7 @@ namespace Paint
             RedrawAllShapes();
         }
 
+        //Clear canvas và vẽ lại tất cả các shapes
         private void RedrawAllShapes()
         {
             canvas.Children.Clear();
@@ -310,43 +311,52 @@ namespace Paint
             }
         }
 
-        private int zoomAmount = 10;
-        private void MainWindow_OnMouseWheel(object sender, MouseWheelEventArgs e)
+        //Xử lí zoom tại vị trí con trỏ chuột khi lăn
+        private void Grid_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            UpdateViewBox((e.Delta > 0) ? zoomAmount : -zoomAmount);
+            var matTrans = canvas.RenderTransform as MatrixTransform;
+            var pos1 = e.GetPosition(grid1);
+
+            var scale = e.Delta > 0 ? 1.1 : 1 / 1.1;
+
+            var mat = matTrans.Matrix;
+            mat.ScaleAt(scale, scale, pos1.X, pos1.Y);
+            matTrans.Matrix = mat;
+            e.Handled = true;
         }
 
-        private double minWidth = 10;
-        private double maxWidth = 400;
-        private void UpdateViewBox(int newValue)
-        {
-            double newWidth = ZoomViewbox.Width + newValue;
-            double newHeight = ZoomViewbox.Width + newValue;
-
-            if (newWidth >= minWidth && newWidth <= maxWidth)
-            {
-                if (newWidth >= 0 && newHeight >= 0)
-                {
-                    ZoomViewbox.Width = newWidth;
-                    ZoomViewbox.Height = newHeight;
-                }
-            }
-        }
-
+        //Zoom in khi nhấn chọn Zoom in button trên ribbon (mặc định zoom in tại điểm trung tâm)
         private void ZoomInButton_Click(object sender, RoutedEventArgs e)
         {
-            UpdateViewBox(zoomAmount);
+            Point center = canvas.TransformToAncestor(grid1).Transform(new Point(canvas.ActualWidth / 2, canvas.ActualHeight / 2));
+
+            var matTrans = canvas.RenderTransform as MatrixTransform;
+            var mat = matTrans.Matrix;
+            var scale = 1.1;
+            mat.ScaleAt(scale, scale, center.X, center.Y);
+            matTrans.Matrix = mat;
+            e.Handled = true;
         }
 
+        //Zoom in khi nhấn chọn Zoom in button trên ribbon (mặc định zoom out tại điểm trung tâm)
         private void ZoomOutButton_Click(object sender, RoutedEventArgs e)
         {
-            UpdateViewBox(-zoomAmount);
+            Point center = canvas.TransformToAncestor(grid1).Transform(new Point(canvas.ActualWidth / 2, canvas.ActualHeight / 2));
+
+            var matTrans = canvas.RenderTransform as MatrixTransform;
+            var mat = matTrans.Matrix;
+            var scale = 1 / 1.1;
+            mat.ScaleAt(scale, scale, center.X, center.Y);
+            matTrans.Matrix = mat;
+            e.Handled = true;
         }
 
+        //Trả về kích cỡ ban đầu khi nhấn chọn 100% zoom button trên ribbon
         private void NormalZoomButton_Click(object sender, RoutedEventArgs e)
         {
-            ZoomViewbox.Width = originalZoomViewSize;
-            ZoomViewbox.Height = originalZoomViewSize;
+            var matTrans = canvas.RenderTransform as MatrixTransform;
+            matTrans.Matrix = originalMatrix;
+            e.Handled = true;
         }
     }
 }

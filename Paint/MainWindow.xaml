@@ -11,8 +11,7 @@
     Title="Paint" Height="450" Width="800"
     WindowState="Maximized"
     WindowStyle="None"
-    Loaded="winMain_Loaded"
-    MouseWheel="MainWindow_OnMouseWheel">
+    Loaded="winMain_Loaded">
     <DockPanel LastChildFill="True">
         <Fluent:Ribbon DockPanel.Dock="Top">
             <!--Quick Access Toolbar Items-->
@@ -138,15 +137,17 @@
             </Fluent:RibbonTabItem>
         </Fluent:Ribbon>
 
-        <Grid ClipToBounds="True">
-            <Viewbox x:Name="ZoomViewbox" Stretch="Fill">
-                <Canvas x:Name="canvas" Background="White"/>
-            </Viewbox>
+        <Grid x:Name="grid1" Background="White" MouseWheel="Grid_MouseWheel" ClipToBounds="True">
+            <Canvas x:Name="canvas">
+                <Canvas.RenderTransform>
+                    <MatrixTransform/> 
+                </Canvas.RenderTransform>
+            </Canvas>
             <Border
-                Background="Transparent"
-                MouseDown="canvas_MouseDown" 
-                MouseMove="canvas_MouseMove" 
-                MouseUp="canvas_MouseUp" />
+                    Background="Transparent"
+                    MouseDown="canvas_MouseDown" 
+                    MouseMove="canvas_MouseMove" 
+                    MouseUp="canvas_MouseUp" />
         </Grid>
     </DockPanel>
 </Fluent:RibbonWindow>
