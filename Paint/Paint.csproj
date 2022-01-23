@@ -24,6 +24,7 @@
     <None Remove="Images\save.png" />
     <None Remove="Images\saveCanvas.png" />
     <None Remove="Images\selection.png" />
+    <None Remove="Images\square.png" />
     <None Remove="Images\undo.png" />
     <None Remove="Images\zoomin.png" />
     <None Remove="Images\zoomout.png" />
@@ -55,15 +56,18 @@
     <Resource Include="Images\save.png" />
     <Resource Include="Images\saveCanvas.png" />
     <Resource Include="Images\selection.png" />
+    <Resource Include="Images\square.png" />
     <Resource Include="Images\undo.png" />
     <Resource Include="Images\zoomin.png" />
     <Resource Include="Images\zoomout.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Circle2D\Circle2D.csproj" />
     <ProjectReference Include="..\Contract\Contract.csproj" />
     <ProjectReference Include="..\Ellipse2D\Ellipse2D.csproj" />
     <ProjectReference Include="..\Rectangle2D\Rectangle2D.csproj" />
+    <ProjectReference Include="..\Square2D\Square2D.csproj" />
   </ItemGroup>
 
 </Project>
