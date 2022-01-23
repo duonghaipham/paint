@@ -40,20 +40,63 @@ namespace Square2D
 
         public UIElement ReDraw()
         {
-            double edge = Math.Max(Math.Abs(_start.X - _finish.X), Math.Abs(_start.Y - _finish.Y));
+            double diff = Math.Abs(_start.X - _finish.X) - Math.Abs(_start.Y - _finish.Y);
+            if (diff > 0)
+            {
+                //set new y coordinate for _finish
+                if (_finish.Y > _start.Y)
+                {
+                    _finish.Y = (_finish.Y + diff);
+                }
+                else
+                {
+                    _finish.Y = (_finish.Y - diff);
+                }
+            }
+            else if (diff < 0)
+            {
+                //set new x coordinate for _finish
+                if (_finish.X > _start.X)
+                {
+                    _finish.X = (_finish.X - diff);
+                }
+                else
+                {
+                    _finish.X = (_finish.X + diff);
+                }
+            }
+
+            //change _start or _finish as needed
+            Point2D newTL = new Point2D();
+            if (_start.Y > _finish.Y)
+            {
+                newTL.Y = _finish.Y;
+            }
+            else
+            {
+                newTL.Y = _start.Y;
+            }
+            if (_start.X > _finish.X)
+            {
+                newTL.X = _finish.X;
+            }
+            else
+            {
+                newTL.X = _start.X;
+            }
 
             var rectangle = new Rectangle()
             {
-                Width = Math.Abs(_start.X - _finish.X),
-                Height = Math.Abs(_start.X - _finish.X),
+                Width = Math.Abs(_finish.X - _start.X),
+                Height = Math.Abs(_finish.Y - _start.Y),
                 Stroke = _colorBrush,
                 StrokeThickness = _strokeThickness,
                 StrokeDashCap = _strokeDashCap,
                 StrokeDashArray = new DoubleCollection() { _dashSize, _gapSize }
             };
 
-            Canvas.SetLeft(rectangle, Math.Min(_start.X, _finish.X));
-            Canvas.SetTop(rectangle, Math.Min(_start.Y, _finish.Y));
+            Canvas.SetLeft(rectangle, newTL.X);
+            Canvas.SetTop(rectangle, newTL.Y);
 
             return rectangle;
         }
