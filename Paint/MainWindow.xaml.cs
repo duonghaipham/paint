@@ -1,16 +1,12 @@
 ﻿using Contract;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Shapes;
 using System.Linq;
-using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
+using System.Windows.Documents;
 using System.Windows.Media.Imaging;
 using MessageBox = System.Windows.MessageBox;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
@@ -44,14 +40,30 @@ namespace Paint
         List<IShape> _undidShapes = new List<IShape>(); //Danh sách các shape bị undo
         IShape _preview;
         Dictionary<string, IShape> _shapePrototypes = new Dictionary<string, IShape>();
+        private bool _isSelectingShape; //Người dùng có đang chọn một shape trên canvas hay không
 
         private void canvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            _isDrawing = true;
+            if (_isSelectingShape)
+            {
+                if (_shapes.Count > 0)
+                {
+                    HitTestResult hitTestResult = VisualTreeHelper.HitTest(canvas, e.GetPosition(canvas));
+                    if (hitTestResult != null && hitTestResult.VisualHit is UIElement element)
+                    {
+                        var myAdornerLayer = AdornerLayer.GetAdornerLayer(canvas);
+                        if (myAdornerLayer != null) myAdornerLayer.Add(new SimpleCircleAdorner(element));
+                    }
+                }
+            }
+            else
+            {
+                _isDrawing = true;
 
-            Point pos = e.GetPosition(canvas);
+                Point pos = e.GetPosition(canvas);
 
-            _preview.HandleStart(pos.X, pos.Y);
+                _preview.HandleStart(pos.X, pos.Y);
+            }
         }
 
         private void canvas_MouseMove(object sender, MouseEventArgs e)
@@ -71,18 +83,21 @@ namespace Paint
 
         private void canvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            _isDrawing = false;
+            if (_isDrawing)
+            {
+                _isDrawing = false;
 
-            // Thêm đối tượng cuối cùng vào mảng quản lí
-            Point pos = e.GetPosition(canvas);
-            _preview.HandleFinish(pos.X, pos.Y);
-            _shapes.Add(_preview);
+                // Thêm đối tượng cuối cùng vào mảng quản lí
+                Point pos = e.GetPosition(canvas);
+                _preview.HandleFinish(pos.X, pos.Y);
+                _shapes.Add(_preview);
 
-            // Sinh ra đối tượng mẫu kế
-            _preview = _shapePrototypes[_selectedShapeName].Clone();
+                // Sinh ra đối tượng mẫu kế
+                _preview = _shapePrototypes[_selectedShapeName].Clone();
 
-            // Ve lai tat ca cac hinh
-            RedrawAllShapes();
+                // Ve lai tat ca cac hinh
+                RedrawAllShapes();
+            }
         }
 
         private void winMain_Loaded(object sender, RoutedEventArgs e)
@@ -129,6 +144,8 @@ namespace Paint
             _selectedShapeName = btnShape.Tag as string;
 
             _preview = _shapePrototypes[_selectedShapeName].Clone();
+
+            _isSelectingShape = false;
         }
 
         private void btnColor1Chooser_Click(object sender, RoutedEventArgs e)
@@ -357,6 +374,19 @@ namespace Paint
             var matTrans = canvas.RenderTransform as MatrixTransform;
             matTrans.Matrix = originalMatrix;
             e.Handled = true;
+        }
+
+        private void ButtonSelectShape_OnClick(object sender, RoutedEventArgs e)
+        {
+            foreach (Fluent.Button button in gbShapes.Items)
+            {
+                button.Background = Brushes.Transparent;
+            }
+
+            Fluent.Button btnSelect = sender as Fluent.Button;
+            btnSelect.Background = Brushes.LightSkyBlue;
+
+            _isSelectingShape = true;
         }
     }
 }
