@@ -44,20 +44,26 @@ namespace Paint
 
         private void canvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (_isSelectingShape)
+            if (_isSelectingShape)  //Nếu đang chọn shape trên canvas
             {
                 if (_shapes.Count > 0)
                 {
                     HitTestResult hitTestResult = VisualTreeHelper.HitTest(canvas, e.GetPosition(canvas));
                     if (hitTestResult != null && hitTestResult.VisualHit is UIElement element)
                     {
-                        var myAdornerLayer = AdornerLayer.GetAdornerLayer(canvas);
-                        if (myAdornerLayer != null) myAdornerLayer.Add(new SimpleCircleAdorner(element));
+                        AdornerLayer myAdornerLayer = clearAllAdorner();
+                        if (myAdornerLayer != null)
+                        {
+                            //Thêm adorner vào UIElement được chọn trên canvas
+                            myAdornerLayer.Add(new RectAdorner(element));
+                        }
                     }
                 }
             }
-            else
+            else  //Nếu đang vẽ shape
             {
+                clearAllAdorner();
+
                 _isDrawing = true;
 
                 Point pos = e.GetPosition(canvas);
@@ -376,6 +382,7 @@ namespace Paint
             e.Handled = true;
         }
 
+        //Xử lí khi nhấn nút chọn shape trên ribbon
         private void ButtonSelectShape_OnClick(object sender, RoutedEventArgs e)
         {
             foreach (Fluent.Button button in gbShapes.Items)
@@ -387,6 +394,31 @@ namespace Paint
             btnSelect.Background = Brushes.LightSkyBlue;
 
             _isSelectingShape = true;
+        }
+
+        //Loại bỏ các adorner hiện có trên từng UIElement trên canvas.
+        //Trả về adornderLayer trên canvas đã được xóa sạch adornder.
+        private AdornerLayer clearAllAdorner()
+        {
+            var myAdornerLayer = AdornerLayer.GetAdornerLayer(canvas);
+            if (myAdornerLayer != null)
+            {
+                foreach (UIElement canvasChild in canvas.Children)
+                {
+                    var adorners = myAdornerLayer.GetAdorners(canvasChild);
+                    if (adorners != null)
+                    {
+                        foreach (var adorner in adorners)
+                        {
+                            myAdornerLayer.Remove(adorner);
+                        }
+                    }
+                }
+
+                return myAdornerLayer;
+            }
+
+            return null;
         }
     }
 }
