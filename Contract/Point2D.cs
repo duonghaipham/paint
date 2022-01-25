@@ -29,7 +29,7 @@ namespace Contract
             Y = y;
         }
 
-        public Type GetUiElementType()
+        public Type GetUIElementType()
         {
             return typeof(Type);
         }
@@ -67,6 +67,18 @@ namespace Contract
         public IShape Clone()
         {
             return new Point2D();
+        }
+
+        public IShape Parse(UIElement element)
+        {
+            Line line = element as Line;
+            return new Point2D()
+            {
+                X = line.X1,
+                Y = line.Y1,
+                _strokeThickness = line.StrokeThickness,
+                _colorBrush = line.Stroke as SolidColorBrush
+            };
         }
 
         //Dãy byte[] được trả về có nội dung:

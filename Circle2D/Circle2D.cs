@@ -21,7 +21,7 @@ namespace Circle2D
         public string Name => "Circle";
         public string Icon => "Images/circle.png";
 
-        public Type GetUiElementType()
+        public Type GetUIElementType()
         {
             return typeof(Ellipse);
         }
@@ -121,6 +121,28 @@ namespace Circle2D
         public IShape Clone()
         {
             return new Circle2D();
+        }
+
+        public IShape Parse(UIElement element)
+        {
+            Ellipse ellipse = element as Ellipse;
+            Circle2D result = new Circle2D()
+            {
+                _colorBrush = ellipse.Stroke as SolidColorBrush,
+                _strokeThickness = ellipse.StrokeThickness,
+                _strokeDashCap = ellipse.StrokeDashCap,
+                _dashSize = (int)ellipse.StrokeDashArray[0],
+                _gapSize = (int)ellipse.StrokeDashArray[1]
+            };
+
+            double startX = Canvas.GetLeft(ellipse);
+            double startY = Canvas.GetTop(ellipse);
+            double finishX = startX + ellipse.Width;
+            double finishY = startY + ellipse.Height;
+            result.HandleStart(startX, startY);
+            result.HandleFinish(finishX, finishY);
+
+            return result;
         }
 
         //Dãy byte[] được trả về có nội dung:

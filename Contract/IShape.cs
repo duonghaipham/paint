@@ -13,7 +13,7 @@ namespace Contract
         void HandleFinish(double x, double y);
 
         //Trả về Loại UIElement được sử dụng trong phương thức ReDraw để vẽ
-        Type GetUiElementType();
+        Type GetUIElementType();
 
         UIElement Draw(
             SolidColorBrush colorBrush,
@@ -24,7 +24,10 @@ namespace Contract
         );
         UIElement ReDraw();
         IShape Clone();
-        //IShape Parse(UIElement element);
+
+        //Nhận vào UIElement và trả về IShape có các thuộc tính tương ứng
+        IShape Parse(UIElement element);
+
         byte[] Serialize();
         IShape Deserialize(byte[] data);
     }
