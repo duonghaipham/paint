@@ -12,7 +12,7 @@ namespace Contract
         void HandleStart(double x, double y);
         void HandleFinish(double x, double y);
 
-        //Trả về Loại UIElement được sử dụng trong phương thức ReDraw để vẽ
+        //Trả về Loại UIElement có thể được Parse
         Type GetUIElementType();
 
         UIElement Draw(

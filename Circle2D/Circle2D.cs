@@ -23,7 +23,7 @@ namespace Circle2D
 
         public Type GetUIElementType()
         {
-            return typeof(Ellipse);
+            return typeof(Circle2D);
         }
 
         public UIElement Draw(

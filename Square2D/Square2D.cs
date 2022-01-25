@@ -23,7 +23,7 @@ namespace Square2D
 
         public Type GetUIElementType()
         {
-            return typeof(Rectangle);
+            return typeof(Square2D);
         }
 
         public UIElement Draw(
