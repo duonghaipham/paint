@@ -13,6 +13,7 @@
     <None Remove="Images\appIcon.ico" />
     <None Remove="Images\circle.png" />
     <None Remove="Images\copy.png" />
+    <None Remove="Images\cursor.png" />
     <None Remove="Images\cut.png" />
     <None Remove="Images\ellipse.png" />
     <None Remove="Images\line.png" />
@@ -27,6 +28,12 @@
     <None Remove="Images\undo.png" />
     <None Remove="Images\zoomin.png" />
     <None Remove="Images\zoomout.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\cursor.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>

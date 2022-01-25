@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -26,6 +27,11 @@ namespace Contract
         {
             X = x;
             Y = y;
+        }
+
+        public Type GetUIElementType()
+        {
+            return typeof(Type);
         }
 
         public UIElement Draw(
@@ -61,6 +67,18 @@ namespace Contract
         public IShape Clone()
         {
             return new Point2D();
+        }
+
+        public IShape Parse(UIElement element)
+        {
+            Line line = element as Line;
+            return new Point2D()
+            {
+                X = line.X1,
+                Y = line.Y1,
+                _strokeThickness = line.StrokeThickness,
+                _colorBrush = line.Stroke as SolidColorBrush
+            };
         }
 
         //Dãy byte[] được trả về có nội dung:

@@ -21,6 +21,11 @@ namespace Square2D
         public string Name => "Square";
         public string Icon => "Images/square.png";
 
+        public Type GetUIElementType()
+        {
+            return typeof(Square2D);
+        }
+
         public UIElement Draw(
             SolidColorBrush colorBrush,
             double strokeThickness,
@@ -114,6 +119,28 @@ namespace Square2D
         public IShape Clone()
         {
             return new Square2D();
+        }
+
+        public IShape Parse(UIElement element)
+        {
+            Rectangle rect = element as Rectangle;
+            Square2D result = new Square2D()
+            {
+                _colorBrush = rect.Stroke as SolidColorBrush,
+                _strokeThickness = rect.StrokeThickness,
+                _strokeDashCap = rect.StrokeDashCap,
+                _dashSize = (int)rect.StrokeDashArray[0],
+                _gapSize = (int)rect.StrokeDashArray[1],
+            };
+
+            double startX = Canvas.GetLeft(rect);
+            double startY = Canvas.GetTop(rect);
+            double finishX = startX + rect.Width;
+            double finishY = startY + rect.Height;
+            result.HandleStart(startX, startY);
+            result.HandleFinish(finishX, finishY);
+
+            return result;
         }
 
         //Dãy byte[] được trả về có nội dung:

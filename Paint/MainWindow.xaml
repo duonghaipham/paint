@@ -60,6 +60,11 @@
                     </Fluent:Button>
                 </Fluent:RibbonGroupBox>
                 <Fluent:RibbonGroupBox Header="Shapes" x:Name="gbShapes">
+                    <Fluent:Button SizeDefinition="Middle" Click="ButtonSelectShape_OnClick">
+                        <Fluent:Button.LargeIcon>
+                            <Image Source="Images/cursor.png" RenderOptions.BitmapScalingMode="HighQuality"></Image>
+                        </Fluent:Button.LargeIcon>
+                    </Fluent:Button>
                 </Fluent:RibbonGroupBox>
                 <Fluent:RibbonGroupBox Header="Color 1">
                     <Fluent:Button
@@ -145,7 +150,7 @@
             </Canvas>
             <Border
                     Background="Transparent"
-                    MouseDown="canvas_MouseDown" 
+                    MouseDown="canvas_MouseDown"
                     MouseMove="canvas_MouseMove" 
                     MouseUp="canvas_MouseUp" />
         </Grid>

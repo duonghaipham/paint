@@ -1,17 +1,15 @@
 ﻿using Contract;
-using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Shapes;
 using System.Linq;
-using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
+using System.Windows.Documents;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using MessageBox = System.Windows.MessageBox;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
@@ -29,6 +27,14 @@ namespace Paint
         public int _dashSize = 1;
         private Matrix originalMatrix;  //matrix ban đầu của canvas, giúp phục hồi trạng thái zoom ban đầu
 
+        bool _isDrawing = false;
+        string _selectedShapeName = "";
+        List<IShape> _shapes = new List<IShape>();  //Danh sách các shape được vẽ trên canvas
+        List<IShape> _undidShapes = new List<IShape>(); //Danh sách các shape bị undo
+        IShape _preview;
+        Dictionary<string, IShape> _shapePrototypes = new Dictionary<string, IShape>();
+        private bool _isSelectingShape; //Người dùng có đang chọn một shape trên canvas hay không
+
         public MainWindow()
         {
             InitializeComponent();
@@ -36,53 +42,6 @@ namespace Paint
             //Lưu matrix ban đầu của canvas
             var matrixTransform = canvas.RenderTransform as MatrixTransform;
             if (matrixTransform != null) originalMatrix = matrixTransform.Matrix;
-        }
-
-        bool _isDrawing = false;
-        string _selectedShapeName = "";
-        List<IShape> _shapes = new List<IShape>();  //Danh sách các shape được vẽ trên canvas
-        List<IShape> _undidShapes = new List<IShape>(); //Danh sách các shape bị undo
-        IShape _preview;
-        Dictionary<string, IShape> _shapePrototypes = new Dictionary<string, IShape>();
-
-        private void canvas_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            _isDrawing = true;
-
-            Point pos = e.GetPosition(canvas);
-
-            _preview.HandleStart(pos.X, pos.Y);
-        }
-
-        private void canvas_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (_isDrawing)
-            {
-                Point pos = e.GetPosition(canvas);
-                _preview.HandleFinish(pos.X, pos.Y);
-
-                // Vẽ lại các hình trước đó
-                RedrawAllShapes();
-
-                // Vẽ hình preview đè lên
-                canvas.Children.Add(_preview.Draw(_color1, _strokeThickness, _strokeDashCap, _gapSize, _dashSize));
-            }
-        }
-
-        private void canvas_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            _isDrawing = false;
-
-            // Thêm đối tượng cuối cùng vào mảng quản lí
-            Point pos = e.GetPosition(canvas);
-            _preview.HandleFinish(pos.X, pos.Y);
-            _shapes.Add(_preview);
-
-            // Sinh ra đối tượng mẫu kế
-            _preview = _shapePrototypes[_selectedShapeName].Clone();
-
-            // Ve lai tat ca cac hinh
-            RedrawAllShapes();
         }
 
         private void winMain_Loaded(object sender, RoutedEventArgs e)
@@ -115,88 +74,139 @@ namespace Paint
             DataContext = this;
         }
 
-        private void btnShape_Click(object sender, RoutedEventArgs e)
-        {
-            Fluent.Button btnShape = sender as Fluent.Button;
+        #region Canvas Mouse Events
 
-            foreach (Fluent.Button button in gbShapes.Items)
+        private void canvas_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (_isSelectingShape)  //Nếu đang chọn shape trên canvas
             {
-                button.Background = Brushes.Transparent;
+                if (_shapes.Count > 0)
+                {
+                    HitTestResult hitTestResult = VisualTreeHelper.HitTest(canvas, e.GetPosition(canvas));
+                    if (hitTestResult != null && hitTestResult.VisualHit is UIElement element)
+                    {
+                        AdornerLayer myAdornerLayer = ClearAllAdorner();
+                        if (myAdornerLayer != null)
+                        {
+                            //Thêm adorner vào UIElement được chọn trên canvas
+                            if (element is Line)
+                            {
+                                myAdornerLayer.Add(new LineAdorner(element));
+                            }
+                            else
+                            {
+                                myAdornerLayer.Add(new RectAdorner(element));
+                            }
+                        }
+                    }
+                }
             }
-
-            btnShape.Background = Brushes.LightSkyBlue;
-
-            _selectedShapeName = btnShape.Tag as string;
-
-            _preview = _shapePrototypes[_selectedShapeName].Clone();
-        }
-
-        private void btnColor1Chooser_Click(object sender, RoutedEventArgs e)
-        {
-            var colorDialog = new System.Windows.Forms.ColorDialog();
-
-            if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            else  //Nếu đang vẽ shape
             {
-                _color1 = new SolidColorBrush(Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B));
-                btnColor1Chooser.Background = _color1;
+                ClearAllAdorner();
+                SaveAllUIElementChangesToShape();
+
+                _isDrawing = true;
+
+                Point pos = e.GetPosition(canvas);
+
+                _preview.HandleStart(pos.X, pos.Y);
             }
         }
 
-        private void btnColor2Chooser_Click(object sender, RoutedEventArgs e)
+        private void canvas_MouseMove(object sender, MouseEventArgs e)
         {
-            var colorDialog = new System.Windows.Forms.ColorDialog();
-
-            if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (_isDrawing)
             {
-                _color2 = new SolidColorBrush(Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B));
-                btnColor2Chooser.Background = _color2;
+                Point pos = e.GetPosition(canvas);
+                _preview.HandleFinish(pos.X, pos.Y);
+
+                // Vẽ lại các hình trước đó
+                RedrawAllShapes();
+
+                // Vẽ hình preview đè lên
+                canvas.Children.Add(_preview.Draw(_color1, _strokeThickness, _strokeDashCap, _gapSize, _dashSize));
             }
         }
 
-        private void sldThick_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void canvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            _strokeThickness = (sender as Slider).Value;
+            if (_isDrawing)
+            {
+                _isDrawing = false;
+
+                // Thêm đối tượng cuối cùng vào mảng quản lí
+                Point pos = e.GetPosition(canvas);
+                _preview.HandleFinish(pos.X, pos.Y);
+                _shapes.Add(_preview);
+
+                // Sinh ra đối tượng mẫu kế
+                _preview = _shapePrototypes[_selectedShapeName].Clone();
+
+                // Ve lai tat ca cac hinh
+                RedrawAllShapes();
+            }
         }
 
-        private void btnDashFlat_Checked(object sender, RoutedEventArgs e)
+        //Xử lí zoom tại vị trí con trỏ chuột khi lăn
+        private void Grid_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            _strokeDashCap = PenLineCap.Flat;
+            var matTrans = canvas.RenderTransform as MatrixTransform;
+            var pos1 = e.GetPosition(grid1);
+
+            var scale = e.Delta > 0 ? 1.1 : 1 / 1.1;
+
+            var mat = matTrans.Matrix;
+            mat.ScaleAt(scale, scale, pos1.X, pos1.Y);
+            matTrans.Matrix = mat;
+            e.Handled = true;
         }
 
-        private void btnDashSquare_Checked(object sender, RoutedEventArgs e)
+        #endregion
+
+        #region QuickAccessItem Buttons on click events
+
+        private void UndoButton_Click(object sender, RoutedEventArgs e)
         {
-            _strokeDashCap = PenLineCap.Square;
+            SaveAllUIElementChangesToShape();
+
+            if (_shapes.Count > 0)
+            {
+                _undidShapes.Add(_shapes[^1]);
+                _shapes.RemoveAt(_shapes.Count - 1);
+
+                RedrawAllShapes();
+            }
         }
 
-        private void btnDashTriangle_Checked(object sender, RoutedEventArgs e)
+        private void RedoButton_Click(object sender, RoutedEventArgs e)
         {
-            _strokeDashCap = PenLineCap.Triangle;
+            SaveAllUIElementChangesToShape();
+
+            if (_undidShapes.Count > 0)
+            {
+                _shapes.Add(_undidShapes[^1]);
+                _undidShapes.RemoveAt(_undidShapes.Count - 1);
+
+                RedrawAllShapes();
+            }
         }
 
-        private void btnDashRound_Checked(object sender, RoutedEventArgs e)
-        {
-            _strokeDashCap = PenLineCap.Round;
-        }
+        #endregion
 
-        private void iudGapSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            _gapSize = (sender as Xceed.Wpf.Toolkit.IntegerUpDown).Value.GetValueOrDefault();
-        }
-
-        private void iudDashSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            _dashSize = (sender as Xceed.Wpf.Toolkit.IntegerUpDown).Value.GetValueOrDefault();
-        }
+        #region Tab Home-Group File: Buttons on click events
 
         private void btnSave_Clicked(object sender, RoutedEventArgs e)
         {
+            SaveAllUIElementChangesToShape();
+
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "PNG (*.png)|*.png";
 
             if (saveFileDialog.ShowDialog() == true)
             {
                 Rect rect = new Rect(canvas.RenderSize);
-                RenderTargetBitmap renderTargetBitmap = 
+                RenderTargetBitmap renderTargetBitmap =
                     new RenderTargetBitmap((int)rect.Right, (int)rect.Bottom, 96d, 96d, PixelFormats.Default);
                 renderTargetBitmap.Render(canvas);
 
@@ -214,6 +224,8 @@ namespace Paint
 
         private void btnSaveCanvas_Clicked(object sender, RoutedEventArgs e)
         {
+            SaveAllUIElementChangesToShape();
+
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "PPF (*.ppf)|*.ppf";
             saveFileDialog.FileName = "ppfCanvas";
@@ -234,6 +246,8 @@ namespace Paint
 
         private void btnOpenCanvas_Clicked(object sender, RoutedEventArgs e)
         {
+            SaveAllUIElementChangesToShape();
+
             //Hỏi người dùng có muốn lưu hình vẽ hiện tại trước khi chọn mở file.
             if (_shapes.Count > 0)
             {
@@ -276,54 +290,115 @@ namespace Paint
             RedrawAllShapes();
         }
 
-        //Clear canvas và vẽ lại tất cả các shapes
-        private void RedrawAllShapes()
-        {
-            canvas.Children.Clear();
+        #endregion
 
-            // Ve lai tat ca cac hinh
-            foreach (var shape in _shapes)
+        #region Tab Home-Group Shape: Buttons on click events
+
+        private void btnShape_Click(object sender, RoutedEventArgs e)
+        {
+            Fluent.Button btnShape = sender as Fluent.Button;
+
+            foreach (Fluent.Button button in gbShapes.Items)
             {
-                var element = shape.ReDraw();
-                canvas.Children.Add(element);
+                button.Background = Brushes.Transparent;
+            }
+
+            btnShape.Background = Brushes.LightSkyBlue;
+
+            _selectedShapeName = btnShape.Tag as string;
+
+            _preview = _shapePrototypes[_selectedShapeName].Clone();
+
+            _isSelectingShape = false;
+        }
+
+        //Xử lí khi nhấn nút "chọn shape" trên ribbon
+        private void ButtonSelectShape_OnClick(object sender, RoutedEventArgs e)
+        {
+            foreach (Fluent.Button button in gbShapes.Items)
+            {
+                button.Background = Brushes.Transparent;
+            }
+
+            Fluent.Button btnSelect = sender as Fluent.Button;
+            btnSelect.Background = Brushes.LightSkyBlue;
+
+            _isSelectingShape = true;
+        }
+
+        #endregion
+
+        #region Tab Home-Group Color: Buttons on click events
+
+        private void btnColor1Chooser_Click(object sender, RoutedEventArgs e)
+        {
+            var colorDialog = new System.Windows.Forms.ColorDialog();
+
+            if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                _color1 = new SolidColorBrush(Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B));
+                btnColor1Chooser.Background = _color1;
             }
         }
 
-        private void UndoButton_Click(object sender, RoutedEventArgs e)
+        private void btnColor2Chooser_Click(object sender, RoutedEventArgs e)
         {
-            if (_shapes.Count > 0)
-            {
-                _undidShapes.Add(_shapes[^1]);
-                _shapes.RemoveAt(_shapes.Count - 1);
+            var colorDialog = new System.Windows.Forms.ColorDialog();
 
-                RedrawAllShapes();
+            if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                _color2 = new SolidColorBrush(Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B));
+                btnColor2Chooser.Background = _color2;
             }
         }
 
-        private void RedoButton_Click(object sender, RoutedEventArgs e)
+        #endregion
+
+        #region Tab Home-Group Stroke: Buttons on click events
+
+        private void sldThick_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (_undidShapes.Count > 0)
-            {
-                _shapes.Add(_undidShapes[^1]);
-                _undidShapes.RemoveAt(_undidShapes.Count - 1);
-                
-                RedrawAllShapes();
-            }
+            _strokeThickness = (sender as Slider).Value;
         }
 
-        //Xử lí zoom tại vị trí con trỏ chuột khi lăn
-        private void Grid_MouseWheel(object sender, MouseWheelEventArgs e)
+        #endregion
+
+        #region Tab Home-Group Dash: Buttons on click events
+
+        private void btnDashFlat_Checked(object sender, RoutedEventArgs e)
         {
-            var matTrans = canvas.RenderTransform as MatrixTransform;
-            var pos1 = e.GetPosition(grid1);
-
-            var scale = e.Delta > 0 ? 1.1 : 1 / 1.1;
-
-            var mat = matTrans.Matrix;
-            mat.ScaleAt(scale, scale, pos1.X, pos1.Y);
-            matTrans.Matrix = mat;
-            e.Handled = true;
+            _strokeDashCap = PenLineCap.Flat;
         }
+
+        private void btnDashSquare_Checked(object sender, RoutedEventArgs e)
+        {
+            _strokeDashCap = PenLineCap.Square;
+        }
+
+        private void btnDashTriangle_Checked(object sender, RoutedEventArgs e)
+        {
+            _strokeDashCap = PenLineCap.Triangle;
+        }
+
+        private void btnDashRound_Checked(object sender, RoutedEventArgs e)
+        {
+            _strokeDashCap = PenLineCap.Round;
+        }
+
+        private void iudGapSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            _gapSize = (sender as Xceed.Wpf.Toolkit.IntegerUpDown).Value.GetValueOrDefault();
+        }
+
+        private void iudDashSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            _dashSize = (sender as Xceed.Wpf.Toolkit.IntegerUpDown).Value.GetValueOrDefault();
+        }
+
+        #endregion
+
+        #region Tab View-Group Zoom: Buttons on click events
+
 
         //Zoom in khi nhấn chọn Zoom in button trên ribbon (mặc định zoom in tại điểm trung tâm)
         private void ZoomInButton_Click(object sender, RoutedEventArgs e)
@@ -357,6 +432,65 @@ namespace Paint
             var matTrans = canvas.RenderTransform as MatrixTransform;
             matTrans.Matrix = originalMatrix;
             e.Handled = true;
+        }
+
+        #endregion
+
+        //Clear canvas và vẽ lại tất cả các shapes
+        private void RedrawAllShapes()
+        {
+            canvas.Children.Clear();
+
+            // Ve lai tat ca cac hinh
+            foreach (var shape in _shapes)
+            {
+                var element = shape.ReDraw();
+                canvas.Children.Add(element);
+            }
+        }
+
+        //Loại bỏ các adorner hiện có trên từng UIElement trên canvas.
+        //Trả về adornderLayer trên canvas đã được xóa sạch adornder.
+        private AdornerLayer ClearAllAdorner()
+        {
+            var myAdornerLayer = AdornerLayer.GetAdornerLayer(canvas);
+            if (myAdornerLayer != null)
+            {
+                foreach (UIElement canvasChild in canvas.Children)
+                {
+                    var adorners = myAdornerLayer.GetAdorners(canvasChild);
+                    if (adorners != null)
+                    {
+                        foreach (var adorner in adorners)
+                        {
+                            myAdornerLayer.Remove(adorner);
+                        }
+                    }
+                }
+
+                return myAdornerLayer;
+            }
+
+            return null;
+        }
+
+        //Lưu lại những thay đổi được thực hiện trên các UIElement trên canvas vào mảng shape
+        private void SaveAllUIElementChangesToShape()
+        {
+            _shapes.Clear();
+
+            foreach (UIElement element in canvas.Children)
+            {
+                foreach (var prototype in _shapePrototypes)
+                {
+                    IShape s = prototype.Value;
+                    if (element.GetType() == s.GetUIElementType())  //Nếu cùng loại UIElement
+                    {
+                        _shapes.Add(s.Parse(element));
+                        break;
+                    }
+                }
+            }
         }
     }
 }

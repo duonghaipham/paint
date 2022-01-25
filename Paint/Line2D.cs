@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Contract;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -27,6 +29,11 @@ namespace Paint
         public void HandleFinish(double x, double y)
         {
             _end = new Point2D() { X = x, Y = y };
+        }
+
+        public Type GetUIElementType()
+        {
+            return typeof(Line);
         }
 
         public UIElement Draw(
@@ -66,6 +73,24 @@ namespace Paint
         public IShape Clone()
         {
             return new Line2D();
+        }
+
+        public IShape Parse(UIElement element)
+        {
+            Line line = element as Line;
+            Line2D result = new Line2D()
+            {
+                _colorBrush = line.Stroke as SolidColorBrush,
+                _strokeThickness = line.StrokeThickness,
+                _strokeDashCap = line.StrokeDashCap,
+                _dashSize = (int)line.StrokeDashArray[0],
+                _gapSize = (int)line.StrokeDashArray[1]
+            };
+
+            result.HandleStart(line.X1, line.Y1);
+            result.HandleFinish(line.X2, line.Y2);
+
+            return result;
         }
 
         //Dãy byte[] được trả về có nội dung:
