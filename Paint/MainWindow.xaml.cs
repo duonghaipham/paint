@@ -1,5 +1,6 @@
 ﻿using Contract;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -8,6 +9,7 @@ using System.Windows.Media;
 using System.Linq;
 using System.Windows.Documents;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using MessageBox = System.Windows.MessageBox;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
@@ -55,7 +57,14 @@ namespace Paint
                         if (myAdornerLayer != null)
                         {
                             //Thêm adorner vào UIElement được chọn trên canvas
-                            myAdornerLayer.Add(new RectAdorner(element));
+                            if (element is Line)
+                            {
+                                myAdornerLayer.Add(new LineAdorner(element));
+                            }
+                            else
+                            {
+                                myAdornerLayer.Add(new RectAdorner(element));
+                            }
                         }
                     }
                 }
