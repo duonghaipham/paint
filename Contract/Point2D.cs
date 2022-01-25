@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -26,6 +27,11 @@ namespace Contract
         {
             X = x;
             Y = y;
+        }
+
+        public Type GetUiElementType()
+        {
+            return typeof(Type);
         }
 
         public UIElement Draw(

@@ -20,7 +20,12 @@ namespace Ellipse2D
 
         public string Name => "Ellipse";
         public string Icon => "Images/ellipse.png";
-        
+
+        public Type GetUiElementType()
+        {
+            return typeof(Ellipse);
+        }
+
         public UIElement Draw(
             SolidColorBrush colorBrush,
             double strokeThickness,

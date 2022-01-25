@@ -21,6 +21,11 @@ namespace Circle2D
         public string Name => "Circle";
         public string Icon => "Images/circle.png";
 
+        public Type GetUiElementType()
+        {
+            return typeof(Ellipse);
+        }
+
         public UIElement Draw(
             SolidColorBrush colorBrush,
             double strokeThickness,

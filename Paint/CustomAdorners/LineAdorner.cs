@@ -121,7 +121,6 @@ namespace Paint
                     Point p = snap.Snap(e.GetPosition(line), SnapToGrid.SnapMode.Move);
 
                     // mode: move start or end point
-                    //*
                     if (IsStartPoint)
                     {
                         line.X1 = p.X;
@@ -132,30 +131,6 @@ namespace Paint
                         line.X2 = p.X;
                         line.Y2 = p.Y;
                     }
-                    //*/
-
-                    // mode: move line
-
-                    /*
-                    if (IsStartPoint)
-                    {
-                        double dX = lineItem.StartPoint.X - p.X;
-                        double dY = lineItem.StartPoint.Y - p.Y;
-                        Point pEnd = new Point(lineItem.EndPoint.X - dX, lineItem.EndPoint.Y - dY);
-
-                        lineItem.StartPoint = p;
-                        lineItem.EndPoint = pEnd;
-                    }
-                    else
-                    {
-                        double dX = lineItem.EndPoint.X - p.X;
-                        double dY = lineItem.EndPoint.Y - p.Y;
-                        Point pStart = new Point(lineItem.StartPoint.X - dX, lineItem.StartPoint.Y - dY);
-
-                        lineItem.EndPoint = p;
-                        lineItem.StartPoint = pStart;
-                    }
-                    */
 
                     this.InvalidateVisual();
                 }

@@ -429,5 +429,23 @@ namespace Paint
 
             return null;
         }
+
+        //Lưu lại những thay đổi được thực hiện trên các UIElement trên canvas vào mảng shape
+        private void SaveAllChangesToShape()
+        {
+            _shapes.Clear();
+
+            foreach (UIElement element in canvas.Children)
+            {
+                foreach (var prototype in _shapePrototypes)
+                {
+                    IShape s = prototype.Value;
+                    if (element.GetType() == s.GetUiElementType())  //Nếu cùng loại UIElement
+                    {
+
+                    }
+                }
+            }
+        }
     }
 }

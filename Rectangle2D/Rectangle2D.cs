@@ -21,6 +21,11 @@ namespace Rectangle2D
         public string Name => "Rectangle";
         public string Icon => "Images/rectangle.png";
 
+        public Type GetUiElementType()
+        {
+            return typeof(Rectangle);
+        }
+
         public UIElement Draw(
             SolidColorBrush colorBrush,
             double strokeThickness,

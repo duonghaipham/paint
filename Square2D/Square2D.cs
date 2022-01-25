@@ -21,6 +21,11 @@ namespace Square2D
         public string Name => "Square";
         public string Icon => "Images/square.png";
 
+        public Type GetUiElementType()
+        {
+            return typeof(Rectangle);
+        }
+
         public UIElement Draw(
             SolidColorBrush colorBrush,
             double strokeThickness,

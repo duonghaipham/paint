@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Contract;
 using System.Windows;
 using System.Windows.Media;
@@ -27,6 +28,11 @@ namespace Paint
         public void HandleFinish(double x, double y)
         {
             _end = new Point2D() { X = x, Y = y };
+        }
+
+        public Type GetUiElementType()
+        {
+            return typeof(Line);
         }
 
         public UIElement Draw(
