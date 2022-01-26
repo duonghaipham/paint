@@ -42,23 +42,6 @@
                     <Fluent:Button Header="Save Canvas" Click="btnSaveCanvas_Clicked" LargeIcon="Images/saveCanvas.png"/>
                     <Fluent:Button Header="Open Canvas" Click="btnOpenCanvas_Clicked" LargeIcon="Images/openCanvas.png"/>
                 </Fluent:RibbonGroupBox>
-                <Fluent:RibbonGroupBox Header="Clipboard">
-                    <Fluent:SplitButton Header="Paste">
-                        <Fluent:SplitButton.LargeIcon>
-                            <Image Source="Images/paste.png" RenderOptions.BitmapScalingMode="HighQuality"></Image>
-                        </Fluent:SplitButton.LargeIcon>
-                    </Fluent:SplitButton>
-                    <Fluent:Button Header="Cut" Fluent:RibbonProperties.SizeDefinition="Middle">
-                            <Fluent:Button.LargeIcon>
-                                <Image Source="Images/cut.png" RenderOptions.BitmapScalingMode="HighQuality"></Image>
-                            </Fluent:Button.LargeIcon>
-                        </Fluent:Button>
-                    <Fluent:Button Header="Copy" Fluent:RibbonProperties.SizeDefinition="Middle">
-                        <Fluent:Button.LargeIcon>
-                            <Image Source="Images/copy.png" RenderOptions.BitmapScalingMode="HighQuality"></Image>
-                        </Fluent:Button.LargeIcon>
-                    </Fluent:Button>
-                </Fluent:RibbonGroupBox>
                 <Fluent:RibbonGroupBox Header="Shapes" x:Name="gbShapes">
                     <Fluent:Button SizeDefinition="Middle" Click="ButtonSelectShape_OnClick">
                         <Fluent:Button.LargeIcon>

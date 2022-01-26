@@ -19,6 +19,7 @@
     <None Remove="Images\line.png" />
     <None Remove="Images\openCanvas.png" />
     <None Remove="Images\paste.png" />
+    <None Remove="Images\point.png" />
     <None Remove="Images\rectangle.png" />
     <None Remove="Images\redo.png" />
     <None Remove="Images\save.png" />
@@ -51,6 +52,7 @@
     <Resource Include="Images\line.png" />
     <Resource Include="Images\openCanvas.png" />
     <Resource Include="Images\paste.png" />
+    <Resource Include="Images\point.png" />
     <Resource Include="Images\rectangle.png" />
     <Resource Include="Images\redo.png" />
     <Resource Include="Images\save.png" />
